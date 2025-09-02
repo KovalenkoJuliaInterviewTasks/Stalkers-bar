@@ -12,7 +12,7 @@ const options = [
 const LanguageSelect = () => {
     const dispatch = useDispatch();
 
-    const [selectedOption, setSelectedOption] = useState(options[0]);
+    const [selectedOption, setSelectedOption] = useState(options[2]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     return (

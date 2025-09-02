@@ -33,7 +33,7 @@ const Menu = () =>
     return (
         <div className={`${styles.menu}`}>
             <div className={`${styles.navigate}`}>
-                <ul style={{display: 'flex', flexDirection: 'column'}}>
+                <ul style={{display: 'flex', flexDirection: 'row'}}>
                     {navMenuItemsArray.map(i => <li className={`nav-item mx-1 border border-dark rounded-pill btn flex-column`}
                               key={i.route} onClick={() =>dispatch(changeMenuNavItem(i.route))} >{getLable(i)}</li>)}
                 </ul>
