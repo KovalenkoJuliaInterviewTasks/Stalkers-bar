@@ -148,7 +148,7 @@ export const barItems =
                      cost1: 40},
                  {titleEn: 'Vodka-Cranberries', titleRu: 'Водка-Клюква', titleHe: 'וודקה-חמוציות',
                      image: 'vodka_klukva.jpg', cost1: 40},
-                 {titleEn: 'Margarita', titleRu: 'Маргарита', titleHe: 'מרגריטה',
+                 {titleEn: 'Frozen Margarita', titleRu: 'Снежная Маргарита', titleHe: 'פרוזן מרגריטה',
                         image: 'margarita.jpg', cost1: 40}]
         },
         {title: 'dot', titleEn: 'DOT 4', titleHe: 'דוט 4', titleRu: 'ДОТ 4', items:
