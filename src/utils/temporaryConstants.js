@@ -1,6 +1,6 @@
 export const foodItems =
     [
-        {title: 'starter', titleEn: 'Starters', titleHe: 'תוספי מנוע', titleRu: 'Стартеры', items:
+        {id: 'starter', titleEn: 'Starters', titleHe: 'תוספי מנוע', titleRu: 'Стартеры', items:
                 [  {titleEn: 'Chips', titleRu: 'Чипсы', titleHe: 'צ\'יפס', image: 'chips.jpg', cost1: 25},
                    {titleEn: 'Chips with cheese', titleRu: 'Чипсы с сыром', titleHe: 'צ\'יפס עם גבינה',
                         descRu: 'Булгарит или пармезан', descEn: 'Bulgarian cheese or parmesan',
@@ -21,7 +21,7 @@ export const foodItems =
                    {titleEn: 'Edamame', titleRu: 'Адамаме', titleHe: 'אדממה',
                         image: 'edamame.jpg', cost1: 25}]
         },
-        {title: 'marine', titleEn: 'Marine Fuel', titleHe: 'דלק ימי', titleRu: 'Морское топливо', items:
+        {_id: 'marine', titleEn: 'Marine Fuel', titleHe: 'דלק ימי', titleRu: 'Морское топливо', items:
                 [{titleEn: 'Cocktail shrimps', titleRu: 'Коктейльные креветки', titleHe: 'שרימפס קוקטייל',
                     image: 'cocktail_shrimps.jpg', cost1: 50},
                  {titleEn: 'Shrimp in disguise', titleRu: 'Креветки в маскировке', titleHe: 'שרימפס עטוף',
@@ -34,7 +34,7 @@ export const foodItems =
                  {titleEn: 'Fish&Chips', titleRu: 'Фиш&Чипс', titleHe: 'פיש & צ\'יפס',
                         image: 'fish_chips.jpg', cost1: 60}]
         },
-        {title: 'ground', titleEn: 'Ground Fuel', titleHe: 'דלק יבשתי', titleRu: 'Наземное топливо', items:
+        {_id: 'ground', titleEn: 'Ground Fuel', titleHe: 'דלק יבשתי', titleRu: 'Наземное топливо', items:
                 [{titleEn: 'Schnitzel + Chips + Salad', titleRu: 'Шницель + Чипс + Салат',
                     titleHe: 'שניצל + צ\'יפס + סלט', image: 'schnitzel_chips_salad.jpg', cost1: 60},
                  {titleEn: 'Frankfurters + Chips + Sauerkraut', titleRu: 'Колбаски + Чипс + Квашеная капуста',
@@ -50,8 +50,8 @@ export const foodItems =
     ];
 export const barItems =
     [
-        {title: 'cooling', titleEn: 'Cooling agents', titleHe: 'קררים', titleRu: 'Хладогенты'},
-        {title: 'draft', titleEn: 'Draft', titleHe: 'חבית', titleRu: 'Бочка', items:
+        {_id: 'cooling', titleEn: 'Cooling agents', titleHe: 'קררים', titleRu: 'Хладогенты'},
+        {_id: 'draft', titleEn: 'Draft', titleHe: 'חבית', titleRu: 'Бочка', items:
                 [{titleEn: 'Budvar dark czech lager', titleRu: 'Будвар чешское темное',
                     titleHe: 'בודבר דארק לאגר צ\'כי',
                     image: 'budvar.jpg', cost1: 25, cost2: 35, cap1: '1/3 L', cap2: '1/2 L'},
@@ -65,8 +65,8 @@ export const barItems =
                  {titleEn: 'Kasteel Rouge', titleRu: 'Кастиль руж', titleHe: 'קסתלה רוגי',
                         image: 'kasteel_rouge.jpg', cost1: 35, cost2: 45, cap1: '1/3 L', cap2: '1/2 L'}]
         },
-        {title: 'bottled', titleEn: 'Bottled', titleHe: 'בקבוק', titleRu: 'Бутылка', items:
-                [{titleEn: 'Goldstar', titleRu: 'Голдстар', titleHe: 'גולדסטאר', image: 'goldstar.jpg',
+        {_id: 'bottled', titleEn: 'Bottled', titleHe: 'בקבוק', titleRu: 'Бутылка', items:
+                [{titleEn: 'Heineken 00', titleRu: 'Хайникен 00', titleHe: 'היינקן 00', image: 'heineken_00.jpg',
                     cost1: 25, cap1: '1/3 L'},
                  {titleEn: 'Heineken', titleRu: 'Хайникен', titleHe: 'היינקן', image: 'heineken.jpg',
                         cost1: 25, cap1: '1/3 L'},
@@ -77,32 +77,35 @@ export const barItems =
                   {titleEn: 'Kasteel', titleRu: 'Кастиль', titleHe: 'קסתלה', image: 'kasteel_rubus.jpg',
                         cost1: 40, cap1: '1/3 L'}]
         },
-        {title: 'fuel', titleEn: 'Fuel', titleHe: 'תוספי מנוע', titleRu: 'Топливо'},
-        {title: 'whiskey', titleEn: 'Whiskey', titleHe: 'וויסקי', titleRu: 'Виски', items:
+        {_id: 'fuel', titleEn: 'Fuel', titleHe: 'תוספי מנוע', titleRu: 'Топливо'},
+        {_id: 'whiskey', titleEn: 'Whiskey', titleHe: 'וויסקי', titleRu: 'Виски', items:
                 [{titleEn: 'Jameson', titleRu: 'Джеймсон', titleHe: 'ג\'יימסון', image: 'jameson.jpg',
                     cost1: 20, cost2: 30, cap1: '30ml', cap2: '50ml'},
                  {titleEn: 'Jack Daniels', titleRu: 'Джек Дэниэлс', titleHe: 'ג\'ק דניאלס',
                      image: 'jack_daniels.jpg', cost1: 20, cost2: 30, cap1: '30ml', cap2: '50ml'},
+                 {titleEn: 'Johnnie Walker Red Label', titleRu: 'Джони Уолкер Ред Лейбл',
+                    titleHe: 'ג\'וני ווקר רד לייבל', image: 'red_label.jpg', cost1: 20, cost2: 30,
+                     cap1: '30ml', cap2: '50ml'},
                  {titleEn: 'Monkey Shoulder', titleRu: 'Монки Шолдер', titleHe: 'מונקי שולדר',
-                     image: 'monkey_shoulder.jpg', cost1: 30, cost2: 45, cap1: '30ml', cap2: '50ml'},
+                        image: 'monkey_shoulder.jpg', cost1: 30, cost2: 45, cap1: '30ml', cap2: '50ml'},
                  {titleEn: 'Glenfiddich 12', titleRu: 'Гленфиддик 12', titleHe: 'גלנפידיך 12',
                      image: 'glenfiddich12.jpg', cost1: 55, cap1: '50ml'},
                  {titleEn: 'Glenfiddich 15', titleRu: 'Гленфиддик 15', titleHe: 'גלנפידיך 15',
                      image: 'glenfiddich15.jpg', cost1: 60, cap1: '50ml'}]
         },
-        {title: 'vodka', titleEn: 'Vodka', titleHe: 'וודקה', titleRu: 'Водка', items:
+        {_id: 'vodka', titleEn: 'Vodka', titleHe: 'וודקה', titleRu: 'Водка', items:
                 [{titleEn: 'Russkiy Standart', titleRu: 'Русский Стандарт', titleHe: 'ראסקי סטנדרט',
                     image: 'russkiy_standart.jpg', cost1: 20, cost2: 30, cap1: '30ml', cap2: '50ml'},
                  {titleEn: 'Van Gogh', titleRu: 'Ван Гог', titleHe: 'ואן גוך', image: 'van_gogh.jpg',
                         cost1: 30, cost2: 45, cap1: '30ml', cap2: '50ml'}]
         },
-        {title: 'rum', titleEn: 'Rum', titleHe: 'רום', titleRu: 'Ром', items:
+        {_id: 'rum', titleEn: 'Rum', titleHe: 'רום', titleRu: 'Ром', items:
                 [{titleEn: 'Bacardi', titleRu: 'Бакарди', titleHe: 'בקרדי', image: 'bacardi.jpg',
                     cost1: 20, cost2: 30, cap1: '30ml', cap2: '50ml'},
                  {titleEn: 'Captain Morgan', titleRu: 'Кэптан Морган', titleHe: 'קפטן מורגן',
                      image: 'captain_morgan.jpg', cost1: 20, cost2: 30, cap1: '30ml', cap2: '50ml'}]
         },
-        {title: 'cognac', titleEn: 'Cognac', titleHe: 'קוניאק', titleRu: 'Коньяк', items:
+        {_id: 'cognac', titleEn: 'Cognac', titleHe: 'קוניאק', titleRu: 'Коньяк', items:
                 [{titleEn: 'Meukow De Lux', titleRu: 'Мюко Де Люкс', titleHe: 'מיוקו דה לוקס',
                     image: 'meukow.jpg', cost1: 45, cap1: '50ml'},
                  {titleEn: 'Courvoisier VS', titleRu: 'Курвуазье VS', titleHe: 'קורוואזיה VS',
@@ -110,32 +113,32 @@ export const barItems =
                  {titleEn: 'Remy Martin VSOP', titleRu: 'Реми Мартин VSOP', titleHe: 'רמי מרטין VSOP',
                      image: 'remy_martin.jpg', cost1: 65, cap1: '50ml'}]
         },
-        {title: 'gin', titleEn: 'GIN', titleHe: 'ג\'ין', titleRu: 'Джин', items:
+        {_id: 'gin', titleEn: 'GIN', titleHe: 'ג\'ין', titleRu: 'Джин', items:
                 [{titleEn: 'Bombay', titleRu: 'Бомбей', titleHe: 'בומביי', image: 'bombay.jpg',
                     cost1: 20, cost2: 30, cap1: '30ml', cap2: '50ml'},
                  {titleEn: 'Befeater', titleRu: 'Бифитер', titleHe: 'ביפיטר', image: 'befeater.jpg',
                         cost1: 20, cost2: 30, cap1: '30ml', cap2: '50ml'}]
         },
-        {title: 'tequila', titleEn: 'Tequila', titleHe: 'טקילה', titleRu: 'Текила', items:
+        {_id: 'tequila', titleEn: 'Tequila', titleHe: 'טקילה', titleRu: 'Текила', items:
                 [{titleEn: 'Cuervo Gold', titleRu: 'Куэрво Голд', titleHe: 'קוארבו גולד',
                     image: 'cuervo_gold.jpg', cost1: 20, cost2: 30, cap1: '30ml', cap2: '50ml'},
                  {titleEn: 'Cuervo Silver', titleRu: 'Куэрво Силвер', titleHe: 'קוארבו סילבר',
                      image: 'cuervo_silver.jpg', cost1: 20, cost2: 30, cap1: '30ml', cap2: '50ml'}]
         },
-        {title: 'absent', titleEn: 'Absent', titleHe: 'אבסנט', titleRu: 'Абсент', items:
+        {_id: 'absent', titleEn: 'Absent', titleHe: 'אבסנט', titleRu: 'Абсент', items:
                 [{titleEn: 'La Cour', titleRu: 'Ла Кур', titleHe: 'לה קור', image: 'la_cour.jpg',
                     cost1: 30, cost2: 45, cap1: '30ml', cap2: '50ml'}]
         },
-        {title: 'ouzo', titleEn: 'Ouzo', titleHe: 'אוזו', titleRu: 'Узо', items:
+        {_id: 'ouzo', titleEn: 'Ouzo', titleHe: 'אוזו', titleRu: 'Узо', items:
                 [{titleEn: 'Plomari', titleRu: 'Пломари', titleHe: 'פלומרי', image: 'plomari.jpg',
                     cost1: 20, cost2: 30, cap1: '30ml', cap2: '50ml'}]
         },
-        {title: 'liker', titleEn: 'Likers', titleHe: 'ליקרים', titleRu: 'Ликеры', items:
+        {_id: 'liker', titleEn: 'Likers', titleHe: 'ליקרים', titleRu: 'Ликеры', items:
                 [{titleEn: 'Jagermeister', titleRu: 'Егермейстер', titleHe: 'יגרמייסטר',
                     image: 'jagermeister.jpg', cost1: 20, cost2: 30, cap1: '30ml', cap2: '50ml'}]
         },
-        {title: 'mix', titleEn: 'Fuel Mixture', titleHe: 'תערובות בעירה', titleRu: 'Топливные смеси'},
-        {title: 'mixture', titleEn: '2 component mixture', titleHe: 'תערובת של 2', titleRu: '2-х компонентные смеси', items:
+        {_id: 'mix', titleEn: 'Fuel Mixture', titleHe: 'תערובות בעירה', titleRu: 'Топливные смеси'},
+        {_id: 'mixture', titleEn: '2 component mixture', titleHe: 'תערובת של 2', titleRu: '2-х компонентные смеси', items:
                 [{titleEn: 'Whiskey-Cola', titleRu: 'Виски-Кола', titleHe: 'וויסקי-קולה',
                     image: 'whiskey_cola.jpg', cost1: 40},
                  {titleEn: 'Rum-Cola', titleRu: 'Ром-Кола', titleHe: 'רום-קולה', image: 'rom_cola.jpg',
@@ -151,7 +154,7 @@ export const barItems =
                  {titleEn: 'Frozen Margarita', titleRu: 'Снежная Маргарита', titleHe: 'פרוזן מרגריטה',
                         image: 'margarita.jpg', cost1: 40}]
         },
-        {title: 'dot', titleEn: 'DOT 4', titleHe: 'דוט 4', titleRu: 'ДОТ 4', items:
+        {_id: 'dot', titleEn: 'DOT 4', titleHe: 'דוט 4', titleRu: 'ДОТ 4', items:
                 [{titleEn: 'Martini Bianco', titleRu: 'Мартини Бьянко', titleHe: 'מרטיני ביאנקו',
                     image: 'martini_bianco.jpg', cost1: 50},
                  {titleEn: 'Martini Rosso', titleRu: 'Мартини Россо', titleHe: 'מרטיני רוסו',
@@ -169,7 +172,7 @@ export const barItems =
                      image: 'aperol_spritz.jpg', cost1: 40},
                  {titleEn: 'Campari', titleRu: 'Кампари', titleHe: 'קמפארי', image: 'campari.jpg', cost1: 65}]
         },
-        {title: 'soft', titleEn: 'Non-alcoholic drinks', titleHe: 'משקאות קלים', titleRu: 'Без градуса', items:
+        {_id: 'soft', titleEn: 'Non-alcoholic drinks', titleHe: 'משקאות קלים', titleRu: 'Без градуса', items:
                 [{titleEn: 'Soft drinks', titleRu: 'Безалкогольные напитки', titleHe: 'שתייה קלה',
                     image: 'juice.jpg', cost1: 10},
                  {titleEn: 'Bottled water', titleRu: 'Вода в бутылке', titleHe: 'מים בבקבוק',

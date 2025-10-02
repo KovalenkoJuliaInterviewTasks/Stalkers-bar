@@ -24,7 +24,7 @@ const MenuItemBar = ({item}) => {
             <Grid2 container>
                 <Card sx={{
                     margin: 1,
-                    width: "25vw", // Общая ширина карточки
+                    width: "30vw", // Общая ширина карточки
                     display: "flex",
                     flexDirection: "row", // Размещаем картинку слева
                     alignItems: "center",
@@ -36,19 +36,19 @@ const MenuItemBar = ({item}) => {
                             height: "100%"
                         }} image={`/images/${item.image}`}/>
                     <CardContent sx={{textAlign: 'center', backgroundColor: '#2C2C2C', color: "white", width: "60%", padding: 0}}>
-                        <Typography gutterBottom sx={{fontSize: '2.5vw'}}>
+                        <Typography gutterBottom sx={{fontSize: '3vw'}}>
                             {getLable(item)}
                         </Typography>
-                        <Typography color='text.secondary' sx={{fontSize: '2vw', color: "white"}}>
+                        <Typography color='text.secondary' sx={{fontSize: '2.5vw', color: "white"}}>
                             {getDesc(item)}
                         </Typography>
-                        {item.cost1 && (<Typography color='text.secondary' sx={{fontSize: '2vw', fontWeight: 'bold', color: "white"}}>
+                        {item.cost1 && (<Typography color='text.secondary' sx={{fontSize: '2.5vw', fontWeight: 'bold', color: "white"}}>
                             {item.cap1}&nbsp;&nbsp;&nbsp;{item.cost1} ₪
                         </Typography>)}
-                        {item.cost2 && (<Typography color='text.secondary' sx={{fontSize: '2vw', fontWeight: 'bold', color: "white"}}>
+                        {item.cost2 && (<Typography color='text.secondary' sx={{fontSize: '2.5vw', fontWeight: 'bold', color: "white"}}>
                             {item.cap2}&nbsp;&nbsp;&nbsp;{item.cost2} ₪
                         </Typography>)}
-                        {item.cost && (<Typography color='text.secondary' sx={{fontSize: '2vw', fontWeight: 'bold', color: "white"}}>
+                        {item.cost && (<Typography color='text.secondary' sx={{fontSize: '2.5vw', fontWeight: 'bold', color: "white"}}>
                             {item.cap}&nbsp;&nbsp;&nbsp;{item.cost} ₪
                         </Typography>)}
                     </CardContent>

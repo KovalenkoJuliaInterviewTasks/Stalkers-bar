@@ -6,7 +6,7 @@ const Bar = () =>
 {
     return (
         <div>
-            {barItems.map(i => <MenuSection key={i.title} item={i}/>)}
+            {barItems.map(i => <MenuSection key={i.titleEn} item={i}/>)}
         </div>
     );
 };

@@ -29,8 +29,12 @@
     letter-spacing: 4px;
     font-size: 3vw;
     font-weight: bold;
+    margin: 0 0.5vw;
 }
-.main{
-    width: 90%;
+.main {
+    width: 100%;
+    margin: 0 auto;
     display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
