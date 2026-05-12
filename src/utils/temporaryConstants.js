@@ -51,22 +51,42 @@ export const foodItems =
                  {titleEn: 'Pasta in creamy sauce or creamy mushroom sauce with Parmesan',
                      titleRu: 'Паста в сливочном/сливочно-грибном соусе с пармезаном',
                      titleHe: 'פסטה ברוטב שמנת או שמנת ופטריות עם פרמזן',
-                        image: 'pasta_creamy.jpg', cost1: 55}]
+                        image: 'pasta_creamy.jpg', cost1: 55},
+                  {titleEn: 'Vareniki with potato',
+                     titleRu: 'Вареники с картошкой',
+                     titleHe: 'ורניקי עם תפוחי אדמה',
+                        image: 'vareniki_potato.jpg', cost1: 50},
+                  {titleEn: 'Vareniki with cottage cheese',
+                     titleRu: 'Вареники с творогом',
+                     titleHe: 'פסטה ברוטב שמנת או שמנת ופטריות עם פרמזן',
+                        image: 'vareniki_cottage.jpg', cost1: 50},
+                  {titleEn: 'Meat blintzes',
+                     titleRu: 'Блинчики с мясом',
+                     titleHe: 'ורניקי עם גבינת כפר',
+                        image: 'blintzes_meat.jpg', cost1: 50},
+                  {titleEn: 'Blintzes with cottage cheese or cherry',
+                     titleRu: 'Блинчики с вишней или творогом',
+                     titleHe: "בלינצ'ס עם גבינה או דובדבנים",
+                        image: 'blintzes_cherry.jpg', cost1: 50}      
+              ]
         }
     ];
 export const barItems =
     [
         {_id: 'cooling', titleEn: 'Cooling agents', titleHe: 'קררים', titleRu: 'Хладогенты'},
         {_id: 'draft', titleEn: 'Draft', titleHe: 'חבית', titleRu: 'Бочка', items:
-                [{titleEn: 'Budvar dark czech lager', titleRu: 'Будвар чешское темное',
+                [{titleEn: 'Budvar Czech Dark Lager', titleRu: 'Будвар чешское темное',
                     titleHe: 'בודבר דארק לאגר צ\'כי',
                     image: 'budvar.jpg', cost1: 25, cost2: 35, cap1: '1/3 L', cap2: '1/2 L'},
-                 {titleEn: 'Budvar czech lager', titleRu: 'Будвар чешское светлое',
+                 {titleEn: 'Budvar Czech Lager', titleRu: 'Будвар чешское светлое',
                      titleHe: 'בודבר בהירה לאגר צ\'כי',
                         image: 'budvar_light.jpg', cost1: 25, cost2: 35, cap1: '1/3 L', cap2: '1/2 L'},
-                 {titleEn: 'Blanche de Bruxeless', titleRu: 'Бланш де Брюссель', titleHe: 'בלאנש דה בריסלס',
+                 {titleEn: 'Řezák layered beer', titleRu: 'Ржезак (резаное пиво)',
+                     titleHe: 'בירת רז׳אק',
+                        image: 'rezak.jpg', cost1: 25, cost2: 35, cap1: '1/3 L', cap2: '1/2 L'},       
+                 {titleEn: 'Blanche de Bruxelles', titleRu: 'Бланш де Брюссель', titleHe: 'בלאנש דה בריסלס',
                         image: 'blanche.jpg', cost1: 25, cost2: 35, cap1: '1/3 L', cap2: '1/2 L'},
-                 {titleEn: 'Magners irish cider', titleRu: 'Магнерс ирландский сидр', titleHe: 'מגנרס סיידר אירי',
+                 {titleEn: 'Magners Irish Cider', titleRu: 'Магнерс ирландский сидр', titleHe: 'מגנרס סיידר אירי',
                         image: 'magners.jpg', cost1: 35, cost2: 45, cap1: '1/3 L', cap2: '1/2 L'},
                  {titleEn: 'Kasteel Rouge', titleRu: 'Кастиль Руж', titleHe: 'קסתלה רוגי',
                         image: 'kasteel_rouge.jpg', cost1: 35, cost2: 45, cap1: '1/3 L', cap2: '1/2 L'}]
