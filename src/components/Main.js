@@ -2,7 +2,6 @@ import React from 'react';
 import {Route, Routes} from "react-router-dom";
 import {navItemsArray} from "../utils/constants";
 import Home from "./Home";
-import Events from "./Events";
 import Gallery from "./Gallery";
 import Menu from "./Menu";
 
