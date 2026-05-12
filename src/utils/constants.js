@@ -9,7 +9,8 @@ export const navItemsArray =
 export const navMenuItemsArray =
     [
         {route: 'bar', titleEn: 'Fluids', titleRu: 'Жидкости', titleHe: 'נוזלים'},
-        {route: 'snacks', titleEn: 'Solid Fuel', titleRu: 'Твердое топливо', titleHe: 'דלק מוצק'}
+        {route: 'snacks', titleEn: 'Solid Fuel', titleRu: 'Твердое топливо', titleHe: 'דלק מוצק'},
+        {route: 'dessert', titleEn: 'Sweet Fuel', titleRu: 'Сладкое топливо', titleHe: 'דלק מתוק'}
      ];
 
 export const headerEn = {text: 'Welcome to “Stalkers Social Club”!\n' +

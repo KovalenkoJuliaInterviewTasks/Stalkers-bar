@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {changeMenuNavItem} from "../redux/menuSlice";
 import Bar from "./Bar";
 import Snack from "./Snack";
+import Dessert from "./Dessert";
 
 
 const Menu = () =>
@@ -27,6 +28,8 @@ const Menu = () =>
                 return <Bar/>;
             case navMenuItemsArray[1].route:
                 return <Snack/>;
+            case navMenuItemsArray[2].route:
+                return <Dessert/>;
             default: return <Bar/>;
          }
     };

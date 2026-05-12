@@ -1,3 +1,9 @@
+export const dessertItems = [
+    {id: '', titleEn: '', titleHe: '', titleRu: '', items:
+            [{titleEn: 'Triple Nitro Boost', titleRu: 'Тройной форсаж', titleHe: 'פורסאז\' משולש',
+        descRu: 'Бельгийская вафля с мороженым и шоколадом', descEn: 'Belgian waffle with ice cream and chocolate',
+        descHe: 'וופל בלגי עם גלידה ושוקולד', image: 'waffle.jpg', cost1: 45}]}]
+
 export const foodItems =
     [
         {id: 'starter', titleEn: 'Starters', titleHe: 'תוספי מנוע', titleRu: 'Стартеры', items:
@@ -40,8 +46,8 @@ export const foodItems =
                  {titleEn: 'Frankfurters + Chips + Sauerkraut', titleRu: 'Колбаски + Чипс + Квашеная капуста',
                         titleHe: 'נקניקיות פרנקפורט + צ\'יפס + כרוב כבוש', image: 'sausage_chips_cabbage.jpg',
                         cost1: 90},
-                 {titleEn: 'Pasta in tomato sauce', titleRu: 'Паста в томатном соусе',
-                        titleHe: 'פסטה ברוטב עגבניות', image: 'pasta_tomato.jpg', cost1: 50},
+                 // {titleEn: 'Pasta in tomato sauce', titleRu: 'Паста в томатном соусе',
+                 //        titleHe: 'פסטה ברוטב עגבניות', image: 'pasta_tomato.jpg', cost1: 50},
                  {titleEn: 'Pasta in creamy sauce or creamy mushroom sauce with Parmesan',
                      titleRu: 'Паста в сливочном/сливочно-грибном соусе с пармезаном',
                      titleHe: 'פסטה ברוטב שמנת או שמנת ופטריות עם פרמזן',
@@ -55,27 +61,31 @@ export const barItems =
                 [{titleEn: 'Budvar dark czech lager', titleRu: 'Будвар чешское темное',
                     titleHe: 'בודבר דארק לאגר צ\'כי',
                     image: 'budvar.jpg', cost1: 25, cost2: 35, cap1: '1/3 L', cap2: '1/2 L'},
-                 {titleEn: 'Krusovice czech lager', titleRu: 'Крушовице чешское светлое',
-                     titleHe: 'קרשוביץ\' לאגר צ\'כי',
-                        image: 'krusovice.jpg', cost1: 25, cost2: 35, cap1: '1/3 L', cap2: '1/2 L'},
+                 {titleEn: 'Budvar czech lager', titleRu: 'Будвар чешское светлое',
+                     titleHe: 'בודבר בהירה לאגר צ\'כי',
+                        image: 'budvar_light.jpg', cost1: 25, cost2: 35, cap1: '1/3 L', cap2: '1/2 L'},
                  {titleEn: 'Blanche de Bruxeless', titleRu: 'Бланш де Брюссель', titleHe: 'בלאנש דה בריסלס',
                         image: 'blanche.jpg', cost1: 25, cost2: 35, cap1: '1/3 L', cap2: '1/2 L'},
                  {titleEn: 'Magners irish cider', titleRu: 'Магнерс ирландский сидр', titleHe: 'מגנרס סיידר אירי',
                         image: 'magners.jpg', cost1: 35, cost2: 45, cap1: '1/3 L', cap2: '1/2 L'},
-                 {titleEn: 'Kasteel Rouge', titleRu: 'Кастиль руж', titleHe: 'קסתלה רוגי',
+                 {titleEn: 'Kasteel Rouge', titleRu: 'Кастиль Руж', titleHe: 'קסתלה רוגי',
                         image: 'kasteel_rouge.jpg', cost1: 35, cost2: 45, cap1: '1/3 L', cap2: '1/2 L'}]
         },
         {_id: 'bottled', titleEn: 'Bottled', titleHe: 'בקבוק', titleRu: 'Бутылка', items:
                 [{titleEn: 'Heineken 00', titleRu: 'Хайникен 00', titleHe: 'היינקן 00', image: 'heineken_00.jpg',
                     cost1: 25, cap1: '1/3 L'},
                  {titleEn: 'Heineken', titleRu: 'Хайникен', titleHe: 'היינקן', image: 'heineken.jpg',
-                        cost1: 25, cap1: '1/3 L'},
+                        cost1: 30, cap1: '1/2 L'},
                   {titleEn: 'Corona', titleRu: 'Корона', titleHe: 'קורונה', image: 'corona.jpg',
                         cost1: 25, cap1: '1/3 L'},
-                  {titleEn: 'Leffe blonde/brown', titleRu: 'Леф блонд/браун', titleHe: 'לפה בלונד/בראון',
-                        image: 'leffe.jpg', cost1: 30, cap1: '1/3 L'},
-                  {titleEn: 'Kasteel', titleRu: 'Кастиль', titleHe: 'קסתלה', image: 'kasteel_rubus.jpg',
-                        cost1: 40, cap1: '1/3 L'}]
+                  // {titleEn: 'Leffe blonde/brown', titleRu: 'Леф блонд/браун', titleHe: 'לפה בלונד/בראון',
+                  //       image: 'leffe.jpg', cost1: 30, cap1: '1/3 L'},
+                  {titleEn: 'Kasteel Rubus', titleRu: 'Кастиль Рубус', titleHe: 'קסטיאל רובוס', image: 'kasteel_rubus.jpg',
+                        cost1: 35, cap1: '1/3 L'},
+                  {titleEn: 'Kasteel Tropical', titleRu: 'Кастиль Тропикал', titleHe: 'קסטיאל טרופיקל', image: 'kasteel_tropical.jpg',
+                        cost1: 35, cap1: '1/3 L'},
+                  {titleEn: 'Kasteel Rouge 00', titleRu: 'Кастиль Руж 00', titleHe: 'קסתלה רוגי 00',
+                      image: 'kasteel_00.jpg', cost1: 35, cap1: '1/3 L'}]
         },
         {_id: 'fuel', titleEn: 'Fuel', titleHe: 'תוספי מנוע', titleRu: 'Топливо'},
         {_id: 'whiskey', titleEn: 'Whiskey', titleHe: 'וויסקי', titleRu: 'Виски', items:
@@ -151,8 +161,11 @@ export const barItems =
                      cost1: 40},
                  {titleEn: 'Vodka-Cranberries', titleRu: 'Водка-Клюква', titleHe: 'וודקה-חמוציות',
                      image: 'vodka_klukva.jpg', cost1: 40},
-                 {titleEn: 'Frozen Margarita', titleRu: 'Снежная Маргарита', titleHe: 'פרוזן מרגריטה',
-                        image: 'margarita.jpg', cost1: 40}]
+                 // {titleEn: 'Mulled wine', titleRu: 'Глинтвейн', titleHe: 'יין חם מתובל',
+                 //        image: 'mulled_wine.jpg', cap1: '1/3 L', cost1: 20}
+                 {titleEn: 'Frozen Margarita', titleRu: 'Снежная Маргарита', titleHe: 'מרגריטה קפואה',
+                        image: 'margarita.jpg', cost1: 40}
+                ]
         },
         {_id: 'dot', titleEn: 'DOT 4', titleHe: 'דוט 4', titleRu: 'ДОТ 4', items:
                 [{titleEn: 'Martini Bianco', titleRu: 'Мартини Бьянко', titleHe: 'מרטיני ביאנקו',
