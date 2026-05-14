@@ -6,22 +6,14 @@ import {changeMenuNavItem} from "../redux/menuSlice";
 import Bar from "./Bar";
 import Snack from "./Snack";
 import Dessert from "./Dessert";
+import {useTranslation} from '../utils/useTranslation';
 
 
 const Menu = () =>
 {
-    const lang = useSelector(state => state.lang.lang);
+    const {getLabel} = useTranslation();
     const menuItem = useSelector(state => state.menu.item);
     const dispatch = useDispatch();
-
-    const getLable = item =>{
-        switch (lang){
-            case 'EN': return item.titleEn;
-            case 'RU': return item.titleRu;
-            case 'HE': return item.titleHe;
-            default: return item.titleRu;
-        }
-    }
     const renderContent = () => {
         switch (menuItem) {
             case navMenuItemsArray[0].route:
@@ -38,7 +30,7 @@ const Menu = () =>
             <div className={`${styles.navigate}`}>
                 <ul style={{display: 'flex', flexDirection: 'row'}}>
                     {navMenuItemsArray.map(i => <li className={`nav-item border border-dark rounded-pill btn flex-column`}
-                              key={i.route} onClick={() =>dispatch(changeMenuNavItem(i.route))} >{getLable(i)}</li>)}
+                              key={i.route} onClick={() =>dispatch(changeMenuNavItem(i.route))} >{getLabel(i)}</li>)}
                 </ul>
             </div>
             <div className={`${styles.main}`}>

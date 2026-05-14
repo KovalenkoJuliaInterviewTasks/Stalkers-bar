@@ -23,7 +23,8 @@ footer{
     text-transform: none;
 }
 footer p{
-    line-height: 0;
+    margin: 0;
+    line-height: 1.4;
 }
 footer .d-flex.HE{
     flex-direction: row-reverse;
@@ -31,22 +32,21 @@ footer .d-flex.HE{
 }
 
 .common-button {
-    display: flex; /* Центрируем текст внутри */
+    display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 120px; /* Минимальная ширина кнопки */
-    min-height: 45px; /* Минимальная высота кнопки */
+    min-width: 100px;
+    min-height: 40px;
 
     font-family: 'Cormorant Unicase', serif;
     background: linear-gradient(180deg, white 20%, red 50%, black 100%);
     border: 3px solid red;
     border-radius: 5px;
     color: transparent;
-    font-size: 2vw;
+    font-size: clamp(12px, 2vw, 20px);
     font-weight: bold;
     letter-spacing: 2px;
     text-align: center;
-    /*padding: 4px;*/
     cursor: pointer;
     text-transform: uppercase;
     -webkit-background-clip: text;
@@ -65,19 +65,67 @@ footer img{
     border-radius: 50%
 }
 
-@media screen and (max-width: 500px)
-{
+.nav-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+.lang-row {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+    .nav-row {
+        flex-wrap: wrap;
+    }
+    .lang-row {
+        width: 100%;
+        justify-content: flex-end;
+        padding-right: 8px;
+    }
+
     header {
         font-size: 5vw;
-     }
+        letter-spacing: 3px;
+    }
     footer {
-        font-size: 2vw;
+        font-size: clamp(10px, 2vw, 14px);
+    }
+    footer img {
+        width: 6vw;
+        height: 6vw;
     }
     .common-button {
-        font-size: 3.5vw;
+        font-size: clamp(11px, 3.5vw, 16px);
+        min-width: 75px;
+        min-height: 34px;
         padding: 2px 6px;
+        letter-spacing: 1px;
         border-width: 2px;
-        min-width: 80px;
-        max-width: 120px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    header {
+        font-size: 6vw;
+        letter-spacing: 2px;
+    }
+    footer {
+        font-size: clamp(10px, 2.5vw, 13px);
+    }
+    footer img {
+        width: 8vw;
+        height: 8vw;
+    }
+    .common-button {
+        font-size: clamp(10px, 4vw, 15px);
+        min-width: 60px;
+        min-height: 30px;
+        padding: 2px 4px;
+        border-width: 2px;
     }
 }

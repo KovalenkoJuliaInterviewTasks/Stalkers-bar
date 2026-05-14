@@ -1,27 +1,17 @@
 import React from 'react';
 import {Link} from "react-router-dom";
-import {useSelector} from "react-redux";
-import styles from '../styles/HeaderFooter.module.css'
-const NavigatorDesktop = ({item}) =>
-{
-     const lang = useSelector(state => state.lang.lang);
+import styles from '../styles/HeaderFooter.module.css';
+import {useTranslation} from '../utils/useTranslation';
 
-    const getLable = item =>{
-        switch (lang){
-            case 'EN': return item.titleEn;
-            case 'RU': return item.titleRu;
-            case 'HE': return item.titleHe;
-            default: return item.titleRu;
-        }
-    }
+const NavigatorDesktop = ({item}) => {
+    const {getLabel} = useTranslation();
 
     return (
-       <Link className={`nav-item m-1 border border-dark rounded-pill btn ${styles['common-button']}`}
-                                          to={item.route}>
-           {getLable(item)}
-                </Link>)
-
-
+        <Link className={`nav-item m-1 border border-dark rounded-pill btn ${styles['common-button']}`}
+              to={item.route}>
+            {getLabel(item)}
+        </Link>
+    );
 };
 
 export default NavigatorDesktop;

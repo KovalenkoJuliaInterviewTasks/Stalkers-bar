@@ -1,4 +1,3 @@
-import React from 'react';
 import NavigatorDesktop from "./NavigatorDesktop";
 
 
@@ -8,9 +7,11 @@ const Navigation = ({items}) =>
         <nav className={'w-100'} style={{
             display: "flex",
             justifyContent: "flex-start",
-            gap: "10px",
+            gap: "6px",
             flexWrap: "nowrap",
-            paddingLeft: "15px"
+            paddingLeft: "10px",
+            paddingTop: "4px",
+            paddingBottom: "4px"
         }}>
                 {items.map(item => <NavigatorDesktop key={item.route} item={item}/>)}
         </nav>

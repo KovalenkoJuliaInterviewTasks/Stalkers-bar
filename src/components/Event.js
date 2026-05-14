@@ -1,28 +1,11 @@
-import React from 'react';
 import {Card, CardContent, CardMedia, Typography} from "@mui/material";
-import {useSelector} from "react-redux";
-
+import {useTranslation} from '../utils/useTranslation';
 
 const Event = ({event, details, index}) => {
-
-    const lang = useSelector(state => state.lang.lang);
-
-    const getLocale = () => {
-        switch (lang) {
-            case 'EN': return 'en-US';
-            case 'RU': return 'ru-RU';
-            case 'HE': return 'he-IL';
-            default: return 'ru-RU';
-        }
-    }
-    const formatDate = (isoDate) => {
-        return new Date(isoDate).toLocaleDateString(getLocale(), {
-            day: 'numeric', month: 'long', year: 'numeric',
-        });
-    }
+    const {lang, formatDate} = useTranslation();
     return (
         <Card sx={{
-            width: "30%",
+            width: { xs: "90%", sm: "45%", md: "30%" },
             marginBottom: "1em",
             marginTop: "1em",
             boxShadow: 3,

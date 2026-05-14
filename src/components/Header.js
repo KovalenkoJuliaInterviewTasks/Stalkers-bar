@@ -8,9 +8,11 @@ const Header = () =>
 {
     return (
         <div className={`${styles['header']}`}>
-            <div className={'d-flex w-100 flex-row'}>
-                <Navigation items = {navItemsArray}/>
-                <LanguageSelect/>
+            <div className={styles['nav-row']}>
+                <Navigation items={navItemsArray}/>
+                <div className={styles['lang-row']}>
+                    <LanguageSelect/>
+                </div>
             </div>
             <header>
                 <img

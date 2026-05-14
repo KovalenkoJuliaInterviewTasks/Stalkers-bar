@@ -1,28 +1,15 @@
-import React from 'react';
-import {useSelector} from "react-redux";
-import MenuItemBar from "./MenuItemBar";
-import MenuItemFood from "./MenuItemFood";
-
+import MenuItem from "./MenuItem";
+import {useTranslation} from '../utils/useTranslation';
 
 const MenuSection = ({item, direct}) => {
-    const lang = useSelector(state => state.lang.lang);
-
-    const getLable = item => {
-        switch (lang) {
-            case 'EN': return item.titleEn;
-            case 'RU': return item.titleRu;
-            case 'HE': return item.titleHe;
-            default: return item.titleRu;
-        }
-    }
+    const {getLabel} = useTranslation();
 
     return (
         <div>
-            <p style={{fontWeight: "bold", textAlign: "center", marginBottom: 0}}>{getLable(item)}</p>
+            <p style={{fontWeight: "bold", textAlign: "center", marginBottom: 0}}>{getLabel(item)}</p>
             <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1vw"}}>
-                {item.items && item.items.map((item, index) =>
-                    direct ? <MenuItemFood item={item} key={index} /> :
-                        <MenuItemBar item={item} key={index} />
+                {item.items && item.items.map((menuItem, index) =>
+                    <MenuItem item={menuItem} layout={direct ? 'column' : 'row'} key={index} />
                 )}
             </div>
         </div>);

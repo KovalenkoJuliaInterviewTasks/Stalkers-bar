@@ -19,15 +19,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
 }
 .navigate li {
-    padding: 10px 10px;
-     background: linear-gradient(30deg, white, red, black);
+    padding: 8px 10px;
+    background: linear-gradient(30deg, white, red, black);
     -webkit-background-clip: text;
     color: transparent;
     cursor: pointer;
     letter-spacing: 4px;
-    font-size: 3vw;
+    font-size: clamp(14px, 3vw, 32px);
     font-weight: bold;
     margin: 0 0.5vw;
 }
@@ -37,4 +39,18 @@
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+}
+
+@media screen and (max-width: 600px) {
+    .navigate {
+        padding: 2vw 1vw;
+    }
+    .navigate li {
+        letter-spacing: 1px;
+        margin: 0;
+        padding: 6px 8px;
+    }
+    .menu {
+        font-size: clamp(12px, 4vw, 20px);
+    }
 }

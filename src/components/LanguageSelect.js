@@ -1,45 +1,30 @@
-import React, {useState} from 'react';
-import styles from '../styles/LanguageSelect.module.css';
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {changeLang} from "../redux/languageSlice";
+import styles from '../styles/LanguageSelect.module.css';
 
 const options = [
-    {value: 'EN', label: 'EN', image: `/images/EN.png`},
-    {value: 'HE', label: 'HE', image: `/images/HE.png`},
-    {value: 'RU', label: 'RU', image: `/images/RU.png`}
+    {value: 'EN', image: `/images/EN.png`},
+    {value: 'HE', image: `/images/HE.png`},
+    {value: 'RU', image: `/images/RU.png`}
 ];
 
 const LanguageSelect = () => {
     const dispatch = useDispatch();
-
-    const [selectedOption, setSelectedOption] = useState(options[2]);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const lang = useSelector(state => state.lang.lang);
 
     return (
-        <span className="custom-select text-end mx-4 fixed-top">
-            <span className="selected-option"
-                  onMouseOver={() => setIsDropdownOpen(true)}>
-                <img src={selectedOption.image} alt={selectedOption.label}/>
-                {selectedOption.label}&nbsp;&nbsp;
-            </span>
-            <span className={`${styles['options-dropdown']} ${isDropdownOpen ? styles.open : ''}`}>
-                {options.map(option => (
-                    <span
-                        key={option.value}
-                        className="option"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedOption(option);
-                            dispatch(changeLang(option.value));
-                            setIsDropdownOpen(false)
-                        }}
-                    >
-                        <img src={option.image} alt={option.label}/>
-                        {option.label}&nbsp;&nbsp;
-                    </span>
-                ))}
-            </span>
-        </span>
+        <div className={styles['lang-bar']}>
+            {options.map(option => (
+                <button
+                    key={option.value}
+                    className={`${styles['lang-btn']} ${lang === option.value ? styles['active'] : ''}`}
+                    onClick={() => dispatch(changeLang(option.value))}
+                >
+                    <img src={option.image} alt={option.value}/>
+                    {option.value}
+                </button>
+            ))}
+        </div>
     );
 };
 

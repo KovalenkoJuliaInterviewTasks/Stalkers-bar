@@ -1,15 +1,7 @@
-.container{
-    display: flex;
-    align-items: center;
-    flex-direction: row
-}
-.container[dir="rtl"] {
-    flex-direction: row-reverse;
-}
 .home{
     font-family: 'Cormorant Unicase', serif;
     color: whitesmoke;
-    font-size: 1.5vw;
+    font-size: clamp(13px, 1.5vw, 22px);
     font-weight: bold;
     letter-spacing: 2px;
     text-align: justify;
@@ -23,7 +15,7 @@
     white-space: pre-line;
 }
 .little{
-    font-size: 1vw;
+    font-size: clamp(11px, 1vw, 16px);
     padding-top: 0;
 }
 .text-box{
@@ -40,13 +32,25 @@
     objectFit: cover;
 }
 
-@media screen and (max-width: 500px)
-{
+@media screen and (max-width: 768px) {
+    .home {
+        font-size: clamp(13px, 2.5vw, 18px);
+        width: 95%;
+        padding: 2vw;
+        letter-spacing: 1px;
+    }
+    .little {
+        font-size: clamp(11px, 2vw, 15px);
+    }
+}
+
+@media screen and (max-width: 500px) {
     .home{
-        font-size: 4vw;
+        font-size: clamp(13px, 4vw, 18px);
+        letter-spacing: 0.5px;
     }
     .little{
-        font-size: 3vw;
+        font-size: clamp(11px, 3vw, 14px);
     }
     .img-box{
         display: none;
