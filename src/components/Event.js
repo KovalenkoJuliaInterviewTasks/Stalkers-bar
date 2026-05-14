@@ -1,4 +1,5 @@
 import {Card, CardContent, CardMedia, Typography} from "@mui/material";
+import { getImageUrl } from '../utils/imageUrl';
 import {useTranslation} from '../utils/useTranslation';
 
 const Event = ({event, details, index}) => {
@@ -18,7 +19,7 @@ const Event = ({event, details, index}) => {
             background: "linear-gradient(180deg, #2a2a2a 30%, #444444 80%)",
             cursor: "pointer"
         }} onClick={() => details(index)}>
-            <CardMedia component="img" image={`/images/${event.image}`} alt={event.title}
+            <CardMedia component="img" image={getImageUrl(event.image)} alt={event.title}
                 sx={{
                     width: "90%",
                     height: "auto",

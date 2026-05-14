@@ -1,4 +1,5 @@
 import React from 'react';
+import { getImageUrl } from '../utils/imageUrl';
 import {Card, CardContent, CardMedia, Typography} from "@mui/material";
 import {useTranslation} from '../utils/useTranslation';
 
@@ -20,7 +21,7 @@ const MenuItem = ({item, layout}) => {
                     ? { width: "40%", height: "100%", minHeight: { xs: "25vw", md: "15vw" } }
                     : { width: "100%", height: { xs: "30vw", sm: "25vw", md: "20vw" } }
                 }
-                image={`/images/${item.image}`}
+                image={getImageUrl(item.image)}
             />
             <CardContent sx={{
                 textAlign: 'center',

@@ -1,7 +1,7 @@
 export const navItemsArray =
     [
         {route: 'home', titleEn: 'Home', titleRu: 'О нас', titleHe: 'דף הבית'},
-        {route: 'events', titleEn: 'Events', titleRu: 'События', titleHe: 'אירועים'},
+        // {route: 'events', titleEn: 'Events', titleRu: 'События', titleHe: 'אירועים'},
         {route: 'menu', titleEn: 'Menu', titleRu: 'Меню', titleHe: 'תפריט'},
         {route: 'gallery', titleEn: 'Gallery', titleRu: 'Галерея', titleHe: 'גלריה'}
      ];

@@ -1,4 +1,5 @@
 import React from 'react';
+import { getImageUrl } from '../utils/imageUrl';
 import {Card, CardContent, CardMedia, Typography} from "@mui/material";
 import {useTranslation} from '../utils/useTranslation';
 
@@ -19,7 +20,7 @@ const Album = ({album, details, index}) => {
             background: "linear-gradient(180deg, #2a2a2a 30%, #444444 80%)",
             cursor: "pointer"
         }} onClick={() => details(index)}>
-            <CardMedia component="img" image={`/images/${album.items[0]}`} alt={getLabel(album)}
+            <CardMedia component="img" image={getImageUrl(album.items[0])} alt={getLabel(album)}
                 sx={{
                     width: "90%",
                     height: "auto",

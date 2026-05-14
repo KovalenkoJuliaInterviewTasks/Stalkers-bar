@@ -1,4 +1,5 @@
 import {Card, CardMedia, CardContent, Typography, Box} from "@mui/material";
+import { getImageUrl } from '../utils/imageUrl';
 import {eventEn, eventHE, eventRu} from "../utils/constants";
 import {useTranslation} from '../utils/useTranslation';
 
@@ -52,7 +53,7 @@ const EventDetails = ({event, onBack}) => {
         position: "relative"
     }} dir={lang === 'HE' ? 'rtl' : 'ltr'}>
         <button onClick={onBack} style={{position: "absolute", top: 0, right: 0, background: "transparent", fontSize: "clamp(14px, 2vw, 24px)", color: "white"}}>X</button>
-        <CardMedia component="img" image={`/images/${event.image}`} alt={event.title}
+        <CardMedia component="img" image={getImageUrl(event.image)} alt={event.title}
             sx={{
                 width: { xs: "90%", sm: "75%", md: "60%" },
                 height: "auto",

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getImageUrl } from '../utils/imageUrl';
 import Slider from "react-slick";
 import { Box, IconButton, useMediaQuery } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
@@ -15,7 +16,7 @@ const SlideImage = ({ photo, index }) => {
 
     return (
         <img
-            src={`/images/${photo}`}
+            src={getImageUrl(photo)}
             alt={`${index + 1}`}
             onLoad={(e) => setPortrait(e.target.naturalHeight > e.target.naturalWidth)}
             style={{
