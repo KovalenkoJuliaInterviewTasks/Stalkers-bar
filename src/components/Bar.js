@@ -1,12 +1,21 @@
-import React from 'react';
-import {barItems} from "../utils/temporaryConstants";
+import { useState, useEffect } from 'react';
 import MenuSection from "./MenuSection";
 
-const Bar = () =>
-{
+const API_URL = process.env.REACT_APP_API_URL || '';
+
+const Bar = () => {
+    const [sections, setSections] = useState([]);
+
+    useEffect(() => {
+        fetch(`${API_URL}/api/menu/bar`)
+            .then(res => res.json())
+            .then(data => setSections(data))
+            .catch(console.error);
+    }, []);
+
     return (
         <div>
-            {barItems.map(i => <MenuSection key={i.titleEn} item={i}/>)}
+            {sections.map(i => <MenuSection key={i.titleEn} item={i}/>)}
         </div>
     );
 };

@@ -1,12 +1,21 @@
-import React from 'react';
-import {dessertItems} from "../utils/temporaryConstants";
+import { useState, useEffect } from 'react';
 import MenuSection from "./MenuSection";
 
-const Dessert = () =>
-{
+const API_URL = process.env.REACT_APP_API_URL || '';
+
+const Dessert = () => {
+    const [sections, setSections] = useState([]);
+
+    useEffect(() => {
+        fetch(`${API_URL}/api/menu/dessert`)
+            .then(res => res.json())
+            .then(data => setSections(data))
+            .catch(console.error);
+    }, []);
+
     return (
         <div>
-            {dessertItems.map(i => <MenuSection key={i.titleEn} item={i} direct={'column'}/>)}
+            {sections.map(i => <MenuSection key={i.titleEn} item={i} direct={'column'}/>)}
         </div>
     );
 };
