@@ -15,7 +15,7 @@ const Bar = () => {
             .then(res => res.json())
             .then(data => dispatch(setBar(data)))
             .catch(console.error);
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <div>

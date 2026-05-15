@@ -15,7 +15,7 @@ const Dessert = () => {
             .then(res => res.json())
             .then(data => dispatch(setDessert(data)))
             .catch(console.error);
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <div>

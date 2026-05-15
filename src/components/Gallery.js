@@ -17,7 +17,7 @@ const Gallery = () => {
             .then(res => res.json())
             .then(data => dispatch(setAlbums(data)))
             .catch(console.error);
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleCardClick = (id) => setSelectedAlbumIndex(id);
     const handleBackClick = () => setSelectedAlbumIndex(-1);

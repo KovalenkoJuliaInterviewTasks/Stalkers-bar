@@ -15,7 +15,7 @@ const Snack = () => {
             .then(res => res.json())
             .then(data => dispatch(setFood(data)))
             .catch(console.error);
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <div>

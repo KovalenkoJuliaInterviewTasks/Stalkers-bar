@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     Box, Button, Tabs, Tab, Typography, Dialog, DialogTitle, DialogContent,
     DialogActions, TextField, IconButton, CircularProgress, Chip, Divider
@@ -51,16 +51,16 @@ const AdminMenu = () => {
 
     const menuType = MENU_TYPES[tabIndex].key;
 
-    const loadSections = () => {
+    const loadSections = useCallback(() => {
         setLoading(true);
         fetch(`${API_URL}/api/menu/${menuType}`)
             .then(res => res.json())
             .then(data => setSections(Array.isArray(data) ? data : [data]))
             .catch(console.error)
             .finally(() => setLoading(false));
-    };
+    }, [menuType]);
 
-    useEffect(() => { loadSections(); }, [tabIndex]);
+    useEffect(() => { loadSections(); }, [loadSections]);
 
     const openAddDialog = (sectionId) => {
         setEditItem(null);
