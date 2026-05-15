@@ -8,9 +8,11 @@ const extractDriveId = (ref) => {
 
 export const getImageUrl = (ref) => {
     if (!ref) return '';
-    if (ref.includes('drive.google.com')) {
-        const id = extractDriveId(ref);
-        if (id) return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
+    if (ref.startsWith('https://') || ref.startsWith('http://')) {
+        if (ref.includes('drive.google.com')) {
+            const id = extractDriveId(ref);
+            if (id) return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
+        }
         return ref;
     }
     if (ref.includes('.')) return `/images/${ref}`;

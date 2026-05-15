@@ -10,7 +10,8 @@ const eventSchema = new mongoose.Schema({
     open: String,
     start: String,
     price: Number,
-    order: { type: Number, default: 0 }
+    order: { type: Number, default: 0 },
+    performerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Performer' }
 });
 
 module.exports = mongoose.model('Event', eventSchema);

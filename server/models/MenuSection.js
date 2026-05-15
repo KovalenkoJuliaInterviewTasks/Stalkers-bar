@@ -11,8 +11,9 @@ const menuItemSchema = new mongoose.Schema({
     cost1: Number,
     cost2: Number,
     cap1: String,
-    cap2: String
-}, { _id: false });
+    cap2: String,
+    hidden: { type: Boolean, default: false }
+});
 
 const menuSectionSchema = new mongoose.Schema({
     sectionId: { type: String, required: true },
