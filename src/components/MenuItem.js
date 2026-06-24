@@ -18,8 +18,8 @@ const MenuItem = ({item, layout}) => {
         }}>
             <CardMedia
                 sx={isRow
-                    ? { width: "40%", height: "100%", minHeight: { xs: "25vw", md: "15vw" } }
-                    : { width: "100%", height: { xs: "30vw", sm: "25vw", md: "20vw" } }
+                    ? { width: "40%", height: "100%", minHeight: { xs: "25vw", md: "15vw" }, backgroundSize: 'contain', backgroundRepeat: 'no-repeat' }
+                    : { width: "100%", height: { xs: "30vw", sm: "25vw", md: "20vw" }, backgroundSize: 'contain', backgroundRepeat: 'no-repeat' }
                 }
                 image={getImageUrl(item.image)}
             />
