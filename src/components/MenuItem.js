@@ -46,6 +46,11 @@ const MenuItem = ({item, layout}) => {
                         {item.cap2}&nbsp;&nbsp;&nbsp;{item.cost2} ₪
                     </Typography>
                 )}
+                {item.cost3 && (
+                    <Typography color='text.secondary' sx={{ fontSize: 'clamp(10px, 2.5vw, 22px)', fontWeight: 'bold', color: "white" }}>
+                        {item.cap3}&nbsp;&nbsp;&nbsp;{item.cost3} ₪
+                    </Typography>
+                )}
                 {item.cost && (
                     <Typography color='text.secondary' sx={{ fontSize: 'clamp(10px, 2.5vw, 22px)', fontWeight: 'bold', color: "white" }}>
                         {item.cap}&nbsp;&nbsp;&nbsp;{item.cost} ₪

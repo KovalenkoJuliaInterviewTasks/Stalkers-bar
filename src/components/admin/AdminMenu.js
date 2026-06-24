@@ -22,7 +22,7 @@ const MENU_TYPES = [
 const emptyItem = {
     titleEn: '', titleRu: '', titleHe: '',
     descEn: '', descRu: '', descHe: '',
-    cost1: '', cap1: '', cost2: '', cap2: '',
+    cost1: '', cap1: '', cost2: '', cap2: '', cost3: '', cap3: '',
     image: '',
 };
 
@@ -267,6 +267,10 @@ const AdminMenu = () => {
                     <Box sx={{ display: 'flex', gap: 2 }}>
                         <TextField label="cost2" value={formData.cost2} onChange={handleChange('cost2')} size="small" sx={{ ...fieldSx, flex: 1 }} />
                         <TextField label="cap2" value={formData.cap2} onChange={handleChange('cap2')} size="small" sx={{ ...fieldSx, flex: 1 }} />
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                        <TextField label="cost3" value={formData.cost3} onChange={handleChange('cost3')} size="small" sx={{ ...fieldSx, flex: 1 }} />
+                        <TextField label="cap3" value={formData.cap3} onChange={handleChange('cap3')} size="small" sx={{ ...fieldSx, flex: 1 }} />
                     </Box>
 
                     <Box>

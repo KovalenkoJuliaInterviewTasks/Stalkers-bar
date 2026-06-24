@@ -10,8 +10,10 @@ const menuItemSchema = new mongoose.Schema({
     image: String,
     cost1: Number,
     cost2: Number,
+    cost3: Number,
     cap1: String,
     cap2: String,
+    cap3: String,
     hidden: { type: Boolean, default: false }
 });
 
