@@ -62,17 +62,23 @@ const AdminMenu = () => {
 
     useEffect(() => { loadSections(); }, [loadSections]);
 
+    // В форме позиция нумеруется с 1, в API уходит индекс массива (с 0)
+    const currentSection = sections.find(s => s.sectionId === currentSectionId);
+    const itemsCount = currentSection?.items?.length || 0;
+    const maxPosition = editItem ? itemsCount : itemsCount + 1;
+
     const openAddDialog = (sectionId) => {
+        const section = sections.find(s => s.sectionId === sectionId);
         setEditItem(null);
         setCurrentSectionId(sectionId);
-        setFormData(emptyItem);
+        setFormData({ ...emptyItem, position: (section?.items?.length || 0) + 1 });
         setDialogOpen(true);
     };
 
-    const openEditDialog = (sectionId, item) => {
+    const openEditDialog = (sectionId, item, index) => {
         setEditItem(item);
         setCurrentSectionId(sectionId);
-        setFormData({ ...emptyItem, ...item });
+        setFormData({ ...emptyItem, ...item, position: index + 1 });
         setDialogOpen(true);
     };
 
@@ -107,7 +113,11 @@ const AdminMenu = () => {
 
     const handleSave = async () => {
         try {
-            const payload = { ...formData };
+            const { position, ...fields } = formData;
+            const index = Number(position) - 1;
+            const payload = Number.isInteger(index) && index >= 0
+                ? { ...fields, position: index }
+                : fields;
             if (editItem) {
                 const res = await fetch(`${API_URL}/api/menu/${currentSectionId}/items/${editItem._id}`, {
                     method: 'PUT',
@@ -178,7 +188,7 @@ const AdminMenu = () => {
                         </Typography>
                         <Divider sx={{ borderColor: '#3a3a3a', mb: 2 }} />
 
-                        {section.items && section.items.map(item => (
+                        {section.items && section.items.map((item, index) => (
                             <Box
                                 key={item._id}
                                 sx={{
@@ -194,6 +204,9 @@ const AdminMenu = () => {
                                         style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
                                     />
                                 )}
+                                <Typography sx={{ color: '#777', fontSize: '0.85rem', minWidth: 24, textAlign: 'right' }}>
+                                    {index + 1}
+                                </Typography>
                                 <Box sx={{ flex: 1 }}>
                                     <Typography sx={{ color: '#fff', fontWeight: 'bold' }}>
                                         {item.titleRu || item.titleEn}
@@ -210,7 +223,7 @@ const AdminMenu = () => {
                                     <Chip label="Скрыто" size="small" sx={{ backgroundColor: '#555', color: '#aaa' }} />
                                 )}
                                 <IconButton
-                                    onClick={() => openEditDialog(section.sectionId, item)}
+                                    onClick={() => openEditDialog(section.sectionId, item, index)}
                                     sx={{ color: '#90caf9' }} size="small"
                                 >
                                     <EditIcon fontSize="small" />
@@ -254,6 +267,19 @@ const AdminMenu = () => {
                     {editItem ? 'Редактировать позицию' : 'Добавить позицию'}
                 </DialogTitle>
                 <DialogContent sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                    <TextField
+                        label={`Позиция в списке (1 — ${maxPosition})`}
+                        type="number"
+                        value={formData.position ?? ''}
+                        onChange={handleChange('position')}
+                        inputProps={{ min: 1, max: maxPosition }}
+                        helperText={editItem
+                            ? 'Позиция, на которую переставить; остальные сдвинутся'
+                            : 'Позиция, на которую вставить; остальные сдвинутся вниз'}
+                        FormHelperTextProps={{ sx: { color: '#777' } }}
+                        size="small"
+                        sx={{ ...fieldSx, maxWidth: 260 }}
+                    />
                     {['titleEn', 'titleRu', 'titleHe'].map(f => (
                         <TextField key={f} label={f} value={formData[f]} onChange={handleChange(f)} size="small" sx={fieldSx} />
                     ))}

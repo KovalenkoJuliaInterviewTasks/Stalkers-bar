@@ -11,12 +11,23 @@ router.get('/:type', async (req, res) => {
     }
 });
 
-// POST /:sectionId/items — добавить item в секцию
+// position — индекс позиции в массиве items (0 — первая). Всё, что вне
+// диапазона или не число, означает «в конец».
+const parsePosition = (position, max) => {
+    const index = Number(position);
+    if (!Number.isInteger(index) || index < 0) return null;
+    return Math.min(index, max);
+};
+
+// POST /:sectionId/items — добавить item в секцию (по желанию — на позицию position)
 router.post('/:sectionId/items', async (req, res) => {
     try {
         const section = await MenuSection.findOne({ sectionId: req.params.sectionId });
         if (!section) return res.status(404).json({ error: 'Section not found' });
-        section.items.push(req.body);
+        const { position, ...data } = req.body;
+        const index = parsePosition(position, section.items.length);
+        if (index === null) section.items.push(data);
+        else section.items.splice(index, 0, data);
         await section.save();
         res.status(201).json(section);
     } catch (err) {
@@ -24,14 +35,24 @@ router.post('/:sectionId/items', async (req, res) => {
     }
 });
 
-// PUT /:sectionId/items/:itemId — обновить item по _id
+// PUT /:sectionId/items/:itemId — обновить item по _id (по желанию — переставить на position)
 router.put('/:sectionId/items/:itemId', async (req, res) => {
     try {
         const section = await MenuSection.findOne({ sectionId: req.params.sectionId });
         if (!section) return res.status(404).json({ error: 'Section not found' });
         const item = section.items.id(req.params.itemId);
         if (!item) return res.status(404).json({ error: 'Item not found' });
-        Object.assign(item, req.body);
+        const { position, ...data } = req.body;
+        Object.assign(item, data);
+
+        const target = parsePosition(position, section.items.length - 1);
+        const current = section.items.findIndex(i => i._id.equals(item._id));
+        if (target !== null && target !== current) {
+            section.items.splice(current, 1);
+            section.items.splice(target, 0, item);
+            section.markModified('items');
+        }
+
         await section.save();
         res.json(section);
     } catch (err) {
