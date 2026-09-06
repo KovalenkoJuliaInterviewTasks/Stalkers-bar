@@ -71,7 +71,8 @@ const EventDetails = ({event, onBack}) => {
                 <Typography variant="body1">📅 {formatDate(event.date)}</Typography>
                 <Typography variant="body1">🕗 {`${getOpen()} ${event.open}`}</Typography>
                 <Typography variant="body1">🎸 {`${getStart()} ${event.start}`}</Typography>
-                <Typography variant="body1">💰 {getPrice(event.price)}</Typography>
+                {event.price != null && event.price !== '' &&
+                    <Typography variant="body1">💰 {getPrice(event.price)}</Typography>}
             </Box>
             <Typography
                 variant="body1"
