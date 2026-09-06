@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
             const today = new Date().toISOString().slice(0, 10);
             query = { date: { $gte: today } };
         }
-        const events = await Event.find(query).sort({ date: 1, order: 1 });
+        const events = await Event.find(query).sort({ date: 1 });
         res.json(events);
     } catch (err) {
         res.status(500).json({ error: err.message });

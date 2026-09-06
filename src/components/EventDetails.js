@@ -38,6 +38,14 @@ const EventDetails = ({event, onBack}) => {
             default: return `Цена билета ${price} ₪ - оплата на входе наличными.`;
         }
     }
+    const getDonation = () => {
+        switch (lang) {
+            case 'EN': return 'Entry “for the hat”';
+            case 'RU': return 'Вход «на шляпу»';
+            case 'HE': return 'הכניסה ב"כובע"';
+            default: return 'Вход «на шляпу»';
+        }
+    }
 
     return (<Card sx={{
         width: { xs: "96%", sm: "80%", md: "70%" },
@@ -71,8 +79,9 @@ const EventDetails = ({event, onBack}) => {
                 <Typography variant="body1">📅 {formatDate(event.date)}</Typography>
                 <Typography variant="body1">🕗 {`${getOpen()} ${event.open}`}</Typography>
                 <Typography variant="body1">🎸 {`${getStart()} ${event.start}`}</Typography>
-                {event.price != null && event.price !== '' &&
-                    <Typography variant="body1">💰 {getPrice(event.price)}</Typography>}
+                {event.price != null && event.price !== '' && (Number(event.price) === 0
+                    ? <Typography variant="body1">🎩 {getDonation()}</Typography>
+                    : <Typography variant="body1">💰 {getPrice(event.price)}</Typography>)}
             </Box>
             <Typography
                 variant="body1"

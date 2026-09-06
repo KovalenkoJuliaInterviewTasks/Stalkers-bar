@@ -267,42 +267,8 @@ const EventsTab = ({ performers, onPerformerCreated }) => {
                 )}
             </Box>
 
-            {loading ? (
-                <CircularProgress sx={{ color: '#e53935' }} />
-            ) : (
-                <Box sx={{ mb: 3 }}>
-                    {events.length === 0 && <Typography sx={{ color: '#aaa' }}>Нет событий</Typography>}
-                    {events.map(event => (
-                        <Box key={event._id} sx={{
-                            display: 'flex', alignItems: 'center', gap: 2,
-                            backgroundColor: '#2a2a2a', borderRadius: 1, p: 2, mb: 1
-                        }}>
-                            {event.image && (
-                                <img src={getImageUrl(event.image)} alt=""
-                                    style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }} />
-                            )}
-                            <Box sx={{ flex: 1 }}>
-                                <Typography sx={{ color: '#fff', fontWeight: 'bold' }}>
-                                    {event.title || '—'}
-                                </Typography>
-                                <Typography sx={{ color: '#aaa', fontSize: '0.8rem' }}>
-                                    {event.date ? new Date(event.date).toLocaleDateString('ru-RU') : '—'}
-                                    {event.price != null && ` · ${event.price}₪`}
-                                </Typography>
-                            </Box>
-                            <IconButton onClick={() => openEdit(event)} sx={{ color: '#90caf9' }} size="small">
-                                <EditIcon fontSize="small" />
-                            </IconButton>
-                            <IconButton onClick={() => handleDelete(event._id)} sx={{ color: '#ef5350' }} size="small">
-                                <DeleteIcon fontSize="small" />
-                            </IconButton>
-                        </Box>
-                    ))}
-                </Box>
-            )}
-
             {showForm && (
-                <Box sx={{ backgroundColor: '#2a2a2a', borderRadius: 2, p: 3 }}>
+                <Box sx={{ backgroundColor: '#2a2a2a', borderRadius: 2, p: 3, mb: 3 }}>
                     <Typography sx={{ color: '#fff', fontWeight: 'bold', mb: 2 }}>
                         {editEvent ? 'Редактировать событие' : 'Новое событие'}
                     </Typography>
@@ -358,6 +324,40 @@ const EventsTab = ({ performers, onPerformerCreated }) => {
                             Save
                         </Button>
                     </Box>
+                </Box>
+            )}
+
+            {loading ? (
+                <CircularProgress sx={{ color: '#e53935' }} />
+            ) : (
+                <Box sx={{ mb: 3 }}>
+                    {events.length === 0 && <Typography sx={{ color: '#aaa' }}>Нет событий</Typography>}
+                    {events.map(event => (
+                        <Box key={event._id} sx={{
+                            display: 'flex', alignItems: 'center', gap: 2,
+                            backgroundColor: '#2a2a2a', borderRadius: 1, p: 2, mb: 1
+                        }}>
+                            {event.image && (
+                                <img src={getImageUrl(event.image)} alt=""
+                                    style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }} />
+                            )}
+                            <Box sx={{ flex: 1 }}>
+                                <Typography sx={{ color: '#fff', fontWeight: 'bold' }}>
+                                    {event.title || '—'}
+                                </Typography>
+                                <Typography sx={{ color: '#aaa', fontSize: '0.8rem' }}>
+                                    {event.date ? new Date(event.date).toLocaleDateString('ru-RU') : '—'}
+                                    {event.price != null && ` · ${event.price}₪`}
+                                </Typography>
+                            </Box>
+                            <IconButton onClick={() => openEdit(event)} sx={{ color: '#90caf9' }} size="small">
+                                <EditIcon fontSize="small" />
+                            </IconButton>
+                            <IconButton onClick={() => handleDelete(event._id)} sx={{ color: '#ef5350' }} size="small">
+                                <DeleteIcon fontSize="small" />
+                            </IconButton>
+                        </Box>
+                    ))}
                 </Box>
             )}
 
