@@ -1,0 +1,21 @@
+{
+  "server": "https://ВАШ-СЕРВЕР-API",
+  "token": "тот же, что PRINT_AGENT_TOKEN в .env сервера",
+  "pollSeconds": 3,
+  "printers": [
+    {
+      "name": "Бар",
+      "roles": ["bar", "bills"],
+      "paper": "58",
+      "cut": true,
+      "connection": { "type": "windows-share", "share": "POS58BAR" }
+    },
+    {
+      "name": "Кухня",
+      "roles": ["kitchen"],
+      "paper": "58",
+      "cut": true,
+      "connection": { "type": "tcp", "host": "192.168.1.50", "port": 9100 }
+    }
+  ]
+}

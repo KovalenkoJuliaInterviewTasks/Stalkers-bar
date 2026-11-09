@@ -21,6 +21,9 @@ server/.env
 .env.test.local
 .env.production.local
 
+# generated bills (orders page)
+server/bills/
+
 # misc
 .DS_Store
 Thumbs.db
@@ -40,3 +43,8 @@ yarn-error.log*
 # pnp
 /.pnp
 .pnp.js
+
+# print-agent: локальные настройки с токеном, зависимости и тестовые распечатки
+print-agent/config.json
+print-agent/node_modules/
+print-agent/printed/
