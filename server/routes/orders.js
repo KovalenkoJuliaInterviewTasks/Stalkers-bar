@@ -154,7 +154,7 @@ router.delete('/:id', handle(async (req, res) => {
 
 // POST /:id/items — добавить позицию.
 // Из меню: { menuItemId, variant: 1|2|3, qty, ice, comment }
-// Не из меню: { custom: true, title, price, qty, comment, station: 'kitchen'|'bar'|null }
+// Не из меню: { custom: true, title, price, qty, comment } — всегда отправляется на бар
 router.post('/:id/items', handle(async (req, res) => {
     const body = req.body;
     const qty = parseQty(body.qty ?? 1);
@@ -167,7 +167,7 @@ router.post('/:id/items', handle(async (req, res) => {
         if (!Number.isFinite(price) || price < 0) throw new HttpError(400, 'Введите цену');
         line = {
             menuItemId: null, sectionType: 'custom',
-            station: STATIONS.includes(body.station) ? body.station : null,
+            station: 'bar', // позиции не из меню всегда идут на бар
             titleRu: title, titleEn: title, titleHe: title,
             cap: '', price: Math.round(price * 100) / 100, qty,
             ice: false, comment: cleanText(body.comment),

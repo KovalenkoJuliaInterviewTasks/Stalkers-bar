@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
     Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField,
-    Typography, Checkbox, FormControlLabel, CircularProgress, Radio, RadioGroup, Alert, Collapse,
+    Typography, Checkbox, FormControlLabel, CircularProgress, Alert, Collapse,
     useMediaQuery,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -27,7 +27,7 @@ const variantsOf = (item) => [1, 2, 3]
     .map(n => ({ n, cap: item[`cap${n}`] || '', cost: item[`cost${n}`] }));
 
 const emptyConfig = { variant: 1, ice: false, qty: 1, comment: '' };
-const emptyCustom = { title: '', price: '', qty: 1, comment: '', station: 'none' };
+const emptyCustom = { title: '', price: '', qty: 1, comment: '' };
 
 const MenuItemRow = ({ item, isBar, selected, onSelect, onAdd, busy }) => {
     const variants = variantsOf(item);
@@ -103,7 +103,6 @@ const CustomItemForm = ({ onAdd, busy }) => {
             price: Number(form.price),
             qty: form.qty,
             comment: form.comment,
-            station: form.station === 'none' ? null : form.station,
         });
         if (ok) setForm(emptyCustom);
     };
@@ -116,14 +115,7 @@ const CustomItemForm = ({ onAdd, busy }) => {
                        inputProps={{ min: 0, step: '0.5', inputMode: 'decimal' }} />
             <TextField label="Комментарий" value={form.comment} onChange={set('comment')} sx={fieldSx}
                        inputProps={{ maxLength: 300 }} />
-            <Box>
-                <Typography variant="body2" sx={{ color: '#aaa' }}>Отправлять</Typography>
-                <RadioGroup row value={form.station} onChange={set('station')}>
-                    {[['none', 'Никуда'], ['kitchen', 'На кухню'], ['bar', 'На бар']].map(([value, label]) => (
-                        <FormControlLabel key={value} value={value} label={label} control={<Radio sx={checkboxSx} />} />
-                    ))}
-                </RadioGroup>
-            </Box>
+            <Typography variant="body2" sx={{ color: '#aaa' }}>Позиция будет отправлена на бар</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <QtyStepper value={form.qty} onChange={qty => setForm(f => ({ ...f, qty }))} />
                 <Button variant="contained" sx={primaryBtnSx} disabled={busy || !valid} onClick={submit}>
@@ -176,6 +168,7 @@ const AddItemDialog = ({ open, onClose, menu, menuError, onAdd }) => {
             setNotice(null);
             setSelectedId(null);
             setSearch('');
+            if (payload.custom) setCustomOpen(false); // после позиции не из меню — обратно к списку меню
             return true;
         } catch (err) {
             setNotice({ type: 'error', text: err.message });
