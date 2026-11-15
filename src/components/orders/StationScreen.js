@@ -10,7 +10,7 @@ const TITLE = { kitchen: 'Заказы на кухню', bar: 'Заказы на
 
 const minutesAgo = (date) => Math.max(0, Math.floor((Date.now() - new Date(date)) / 60000));
 
-// Экран кухни/бара: невыполненные заказы всех столов, обновляется каждые 10 секунд.
+// Kitchen/bar screen: pending tickets of all tables, refreshed every 10 seconds.
 const StationScreen = ({ station }) => {
     const [tickets, setTickets] = useState(null);
     const [error, setError] = useState('');
@@ -20,7 +20,7 @@ const StationScreen = ({ station }) => {
     const load = useCallback(() => {
         ordersApi.tickets(station)
             .then(list => {
-                // Подсвечиваем заказы, появившиеся с момента прошлого обновления
+                // Highlight tickets that appeared since the previous refresh
                 if (knownIds.current) {
                     setFreshIds(new Set(list.filter(t => !knownIds.current.has(t._id)).map(t => t._id)));
                 }
@@ -71,7 +71,13 @@ const StationScreen = ({ station }) => {
                         <Box key={tk._id} sx={{
                             ...cardSx, p: 1.5, display: 'flex', flexDirection: 'column', gap: 1,
                             borderColor: freshIds.has(tk._id) ? '#e53935' : '#3a3a3a',
+                            ...(tk.cancel && { backgroundColor: '#4a1010', border: '3px solid #ff5252' }),
                         }}>
+                            {tk.cancel && (
+                                <Typography sx={{ fontWeight: 900, fontSize: '1.5rem', letterSpacing: '.15em', textAlign: 'center', color: '#ff5252' }}>
+                                    ОТМЕНА
+                                </Typography>
+                            )}
                             <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 1 }}>
                                 <Typography sx={{ fontWeight: 'bold', fontSize: '1.3rem', wordBreak: 'break-word' }}>
                                     Стол {tk.tableName}
@@ -85,7 +91,7 @@ const StationScreen = ({ station }) => {
                                     <li key={idx}>
                                         <Typography component="span" sx={{ fontWeight: 'bold' }}>{i.title}</Typography>
                                         {i.cap && <span> {i.cap}</span>}
-                                        <Typography component="span" sx={{ fontWeight: 'bold', color: '#ff8a80' }}> × {i.qty}</Typography>
+                                        <Typography component="span" sx={{ fontWeight: 'bold', color: '#ff8a80' }}> {tk.cancel ? '−' : '×'} {i.qty}</Typography>
                                         {i.ice && <Typography variant="body2" sx={{ color: '#64b5f6' }}>+ ЛЁД</Typography>}
                                         {i.comment && <Typography variant="body2" sx={{ color: '#ccc', fontStyle: 'italic' }}>{i.comment}</Typography>}
                                     </li>
@@ -97,7 +103,7 @@ const StationScreen = ({ station }) => {
                                     <PrintIcon />
                                 </IconButton>
                                 <Button variant="contained" color="success" startIcon={<CheckIcon />} onClick={() => markDone(tk)}>
-                                    Готово
+                                    {tk.cancel ? 'Принято' : 'Готово'}
                                 </Button>
                             </Box>
                         </Box>

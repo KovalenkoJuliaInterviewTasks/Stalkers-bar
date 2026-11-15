@@ -4,6 +4,7 @@ import { Box, Tabs, Tab, Typography } from '@mui/material';
 import AdminMenu from './AdminMenu';
 import AdminGallery from './AdminGallery';
 import AdminEvents from './AdminEvents';
+import AdminSales from './AdminSales';
 
 const AdminLayout = () => {
     const location = useLocation();
@@ -11,6 +12,7 @@ const AdminLayout = () => {
     const getTabValue = () => {
         if (location.pathname.startsWith('/superadmins/gallery')) return 1;
         if (location.pathname.startsWith('/superadmins/events')) return 2;
+        if (location.pathname.startsWith('/superadmins/sales')) return 3;
         return 0;
     };
 
@@ -31,6 +33,7 @@ const AdminLayout = () => {
                     <Tab label="Menu" component={Link} to="/superadmins/menu" />
                     <Tab label="Gallery" component={Link} to="/superadmins/gallery" />
                     <Tab label="Events" component={Link} to="/superadmins/events" />
+                    <Tab label="Sales" component={Link} to="/superadmins/sales" />
                 </Tabs>
             </Box>
 
@@ -39,6 +42,7 @@ const AdminLayout = () => {
                     <Route path="menu" element={<AdminMenu />} />
                     <Route path="gallery" element={<AdminGallery />} />
                     <Route path="events" element={<AdminEvents />} />
+                    <Route path="sales" element={<AdminSales />} />
                     <Route index element={<AdminMenu />} />
                 </Routes>
             </Box>

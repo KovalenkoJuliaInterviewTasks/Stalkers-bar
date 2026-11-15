@@ -44,7 +44,7 @@ yarn-error.log*
 /.pnp
 .pnp.js
 
-# print-agent: локальные настройки с токеном, зависимости и тестовые распечатки
+# print-agent: local config with the token, dependencies and test printouts
 print-agent/config.json
 print-agent/node_modules/
 print-agent/printed/

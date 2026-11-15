@@ -1,4 +1,4 @@
-// Способы доставки готовых байтов ESC/POS до принтера.
+// Ways to deliver the ready ESC/POS bytes to a printer.
 const net = require('net');
 const fs = require('fs/promises');
 const os = require('os');
@@ -22,7 +22,7 @@ const withTempFile = async (data, fn) => {
     }
 };
 
-// Сетевой принтер (LAN / Wi-Fi), стандартный порт RAW-печати 9100
+// Network printer (LAN / Wi-Fi), standard RAW printing port 9100
 const sendTcp = ({ host, port = 9100 }, data) => new Promise((resolve, reject) => {
     if (!host) return reject(new Error('Не указан host принтера'));
     const socket = net.createConnection({ host, port });
@@ -38,21 +38,21 @@ const sendTcp = ({ host, port = 9100 }, data) => new Promise((resolve, reject) =
     socket.on('close', (hadError) => { if (!hadError) resolve(); });
 });
 
-// macOS / Linux: принтер, установленный в системе (USB или Bluetooth), печать «как есть»
+// macOS / Linux: printer installed in the system (USB or Bluetooth), raw printing
 const sendCups = ({ name }, data) => {
     if (!name) throw new Error('Не указано имя принтера (name)');
     return withTempFile(data, file => run('lp', ['-d', name, '-o', 'raw', file]));
 };
 
-// Windows: принтер установлен в системе и открыт для общего доступа под именем share.
-// Байты копируются напрямую в очередь принтера, драйвер их не меняет.
+// Windows: printer installed in the system and shared under the name `share`.
+// The bytes are copied straight into the print queue; the driver does not change them.
 const sendWindowsShare = ({ share, host = 'localhost' }, data) => {
     if (!share) throw new Error('Не указано сетевое имя принтера (share)');
     const target = share.startsWith('\\\\') ? share : `\\\\${host}\\${share}`;
     return withTempFile(data, file => run('cmd.exe', ['/c', 'copy', '/b', file, target]));
 };
 
-// Для проверки без принтера: сохранить .bin и .png в папку
+// For testing without a printer: save .bin and .png to a folder
 const sendFile = async ({ dir = './printed' }, data, { png, name }) => {
     await fs.mkdir(dir, { recursive: true });
     const base = path.join(dir, `${new Date().toISOString().replace(/[:.]/g, '-')}-${name}`);

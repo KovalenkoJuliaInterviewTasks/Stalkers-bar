@@ -5,7 +5,7 @@ const cloudinary = require('cloudinary').v2;
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-// POST /upload — загрузить файл в Cloudinary
+// POST /upload — upload a file to Cloudinary
 router.post('/upload', upload.single('file'), async (req, res) => {
     try {
         if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
@@ -22,7 +22,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
             api_secret: process.env.CLOUDINARY_API_SECRET,
         });
 
-        // folderId используется как папка в Cloudinary
+        // folderId is used as the Cloudinary folder
         const folder = req.body.folderId || 'stalkers-bar';
 
         const result = await new Promise((resolve, reject) => {

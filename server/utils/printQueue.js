@@ -2,9 +2,9 @@ const PrintJob = require('../models/PrintJob');
 
 const STATION_LABEL = { kitchen: 'Кухня', bar: 'Бар' };
 
-// Что известно о программе-посреднике. Хранится в памяти: агент опрашивает
-// сервер каждые несколько секунд, так что после перезапуска сервера
-// состояние восстанавливается почти сразу.
+// What we know about the print-agent. Kept in memory: the agent polls the
+// server every few seconds, so the state is restored almost immediately
+// after a server restart.
 const agentState = {
     lastSeen: null,
     printers: new Map(), // name -> { name, roles, paper, lastSeen }
@@ -28,7 +28,7 @@ const touchAgent = (printer) => {
 const onlinePrinters = () => [...agentState.printers.values()]
     .filter(p => Date.now() - p.lastSeen < AGENT_ONLINE_MS);
 
-// Ширина ленты принтера, который печатает эту роль (по данным агента); иначе 58 мм.
+// Paper width of the printer serving this role (as reported by the agent); 58 mm otherwise.
 const paperForRole = (role) => {
     const p = [...agentState.printers.values()].find(pr => pr.roles.includes(role));
     return p?.paper || '58';
@@ -39,7 +39,7 @@ const enqueueTicket = (table, ticket) => PrintJob.create({
     kind: 'ticket',
     tableId: table._id,
     ticketId: ticket._id,
-    label: `${STATION_LABEL[ticket.station]} №${ticket.number} — стол ${table.name}`,
+    label: `${ticket.cancel ? 'ОТМЕНА — ' : ''}${STATION_LABEL[ticket.station]} №${ticket.number} — стол ${table.name}`,
 });
 
 const enqueueBill = (table) => PrintJob.create({

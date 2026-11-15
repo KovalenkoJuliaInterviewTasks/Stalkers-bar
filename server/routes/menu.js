@@ -11,15 +11,15 @@ router.get('/:type', async (req, res) => {
     }
 });
 
-// position — индекс позиции в массиве items (0 — первая). Всё, что вне
-// диапазона или не число, означает «в конец».
+// position — index in the items array (0 is the first). Anything out of range
+// or not a number means "at the end".
 const parsePosition = (position, max) => {
     const index = Number(position);
     if (!Number.isInteger(index) || index < 0) return null;
     return Math.min(index, max);
 };
 
-// POST /:sectionId/items — добавить item в секцию (по желанию — на позицию position)
+// POST /:sectionId/items — add an item to the section (optionally at index position)
 router.post('/:sectionId/items', async (req, res) => {
     try {
         const section = await MenuSection.findOne({ sectionId: req.params.sectionId });
@@ -35,7 +35,7 @@ router.post('/:sectionId/items', async (req, res) => {
     }
 });
 
-// PUT /:sectionId/items/:itemId — обновить item по _id (по желанию — переставить на position)
+// PUT /:sectionId/items/:itemId — update an item by _id (optionally move it to position)
 router.put('/:sectionId/items/:itemId', async (req, res) => {
     try {
         const section = await MenuSection.findOne({ sectionId: req.params.sectionId });
@@ -60,7 +60,7 @@ router.put('/:sectionId/items/:itemId', async (req, res) => {
     }
 });
 
-// PATCH /:sectionId/items/:itemId/toggle — переключить hidden
+// PATCH /:sectionId/items/:itemId/toggle — toggle hidden
 router.patch('/:sectionId/items/:itemId/toggle', async (req, res) => {
     try {
         const section = await MenuSection.findOne({ sectionId: req.params.sectionId });
@@ -75,7 +75,7 @@ router.patch('/:sectionId/items/:itemId/toggle', async (req, res) => {
     }
 });
 
-// DELETE /:sectionId/items/:itemId — удалить item
+// DELETE /:sectionId/items/:itemId — delete an item
 router.delete('/:sectionId/items/:itemId', async (req, res) => {
     try {
         const section = await MenuSection.findOne({ sectionId: req.params.sectionId });

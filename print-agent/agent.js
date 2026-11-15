@@ -1,10 +1,10 @@
-// Программа-посредник печати Stalkers Social Club.
-// Каждые несколько секунд спрашивает у сервера новые задания для каждого
-// принтера из config.json, рисует чек и отправляет его на принтер.
+// Stalkers Social Club print-agent.
+// Every few seconds it asks the server for new jobs for each printer in
+// config.json, renders the receipt and sends it to the printer.
 //
-//   node agent.js                 — работать
-//   node agent.js --test          — напечатать пробный чек на всех принтерах
-//   node agent.js --test Кухня    — пробный чек только на одном принтере
+//   node agent.js                 — run
+//   node agent.js --test          — print a test receipt on all printers
+//   node agent.js --test Кухня    — test receipt on one printer only
 //   node agent.js --config other.json
 const fs = require('fs');
 const path = require('path');
@@ -24,7 +24,7 @@ const argValue = (flag) => {
 const log = (...msg) => console.log(new Date().toLocaleTimeString('ru-RU'), ...msg);
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-// ------------------------------------------------------------------ настройки
+// ------------------------------------------------------------------ config
 
 const loadConfig = () => {
     const file = path.resolve(argValue('--config') || path.join(__dirname, 'config.json'));
@@ -58,7 +58,7 @@ const loadConfig = () => {
     return cfg;
 };
 
-// ------------------------------------------------------------------ печать
+// ------------------------------------------------------------------ printing
 
 const printHtml = async (cfg, printer, html, name) => {
     const png = await renderPng(html, printer.paper, cfg.chromePath);
@@ -79,8 +79,8 @@ const api = async (cfg, urlPath, body) => {
     return data;
 };
 
-// Отдельный цикл на каждый принтер: принтеры работают параллельно,
-// а задания одного принтера печатаются строго по очереди.
+// One loop per printer: printers work in parallel,
+// and jobs of a single printer are printed strictly in order.
 const printerLoop = async (cfg, printer) => {
     const info = { name: printer.name, roles: printer.roles, paper: printer.paper };
     let offline = false;
@@ -107,7 +107,7 @@ const printerLoop = async (cfg, printer) => {
     }
 };
 
-// ------------------------------------------------------------------ пробная печать
+// ------------------------------------------------------------------ test print
 
 const testHtml = (printer) => `<!doctype html><html lang="ru"><head><meta charset="utf-8"><style>
   body { width: ${printer.paper === '80' ? '72mm' : '48mm'}; margin: 0 auto; padding: 2mm 0 4mm;
@@ -143,7 +143,7 @@ const runTest = async (cfg, only) => {
     await closeBrowser();
 };
 
-// ------------------------------------------------------------------ запуск
+// ------------------------------------------------------------------ startup
 
 const main = async () => {
     const cfg = loadConfig();

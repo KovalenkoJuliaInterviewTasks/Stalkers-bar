@@ -1,4 +1,4 @@
-// Отрисовка HTML-чека в PNG ровно под ширину ленты (203 dpi) через headless Chrome.
+// Renders an HTML receipt to a PNG exactly as wide as the paper (203 dpi) with headless Chrome.
 const puppeteer = require('puppeteer');
 const { PAPER_DOTS } = require('./escpos');
 
@@ -30,7 +30,7 @@ const renderPng = async (html, paper, chromePath) => {
     const browser = await getBrowser(chromePath);
     const page = await browser.newPage();
     try {
-        // Окно шириной с печатную область; стили @media print — как при обычной печати
+        // Viewport as wide as the printable area; @media print styles, as in normal printing
         await page.setViewport({ width: Math.ceil(dots / scale), height: 200, deviceScaleFactor: scale });
         await page.emulateMediaType('print');
         await page.setContent(html, { waitUntil: 'load', timeout: 20000 });

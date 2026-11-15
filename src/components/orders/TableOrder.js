@@ -14,7 +14,9 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
+import CallSplitIcon from '@mui/icons-material/CallSplit';
 import AddItemDialog from './AddItemDialog';
+import SplitDialog from './SplitDialog';
 import QtyStepper from './QtyStepper';
 import {
     ordersApi, fetchMenu, billUrl, openPrint, lineTotal, tableTotal, pendingCount, money,
@@ -41,6 +43,33 @@ const ConfirmDialog = ({ open, title, text, confirmLabel, onConfirm, onClose }) 
     </Dialog>
 );
 
+// Prompt shown when reducing/removing a line already sent to the kitchen or bar
+const CancelDialog = ({ ask, onClose, onChoose }) => {
+    const line = ask?.line;
+    const removed = line ? line.sentQty - ask.qty : 0;
+    const where = line?.station === 'bar' ? 'бар' : 'кухню';
+    return (
+        <Dialog open={Boolean(ask)} onClose={onClose} PaperProps={{ sx: dialogPaperSx }}>
+            <DialogTitle>{ask?.qty === 0 ? 'Удалить позицию?' : 'Уменьшить количество?'}</DialogTitle>
+            {line && (
+                <DialogContent>
+                    <Typography sx={{ color: '#ccc' }}>
+                        «{line.titleRu}{line.cap ? ` ${line.cap}` : ''}» уже отправлено на {where} ({line.sentQty} шт).
+                        Отменяется: {removed} шт.
+                    </Typography>
+                </DialogContent>
+            )}
+            <DialogActions sx={{ flexWrap: 'wrap', gap: 1 }}>
+                <Button onClick={onClose} sx={{ color: '#aaa' }}>Назад</Button>
+                <Button onClick={() => onChoose(false)} sx={{ color: '#fff' }}>Без отмены</Button>
+                <Button onClick={() => onChoose(true)} variant="contained" sx={primaryBtnSx}>
+                    Отправить отмену на {where}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
 const TableOrder = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -51,9 +80,11 @@ const TableOrder = () => {
     const [menu, setMenu] = useState(null);
     const [menuError, setMenuError] = useState('');
     const [addOpen, setAddOpen] = useState(false);
-    const [renameValue, setRenameValue] = useState(null); // null — диалог закрыт
+    const [renameValue, setRenameValue] = useState(null); // null — dialog closed
     const [confirm, setConfirm] = useState(null);
     const [snack, setSnack] = useState(null);
+    const [cancelAsk, setCancelAsk] = useState(null); // { line, qty } — qty 0 means removal
+    const [splitOpen, setSplitOpen] = useState(false);
     const requestSeq = useRef(0);
 
     const load = useCallback(() => {
@@ -64,6 +95,8 @@ const TableOrder = () => {
     }, [id]);
 
     useEffect(() => {
+        setTable(null); // a different table (e.g. after opening the new bill)
+        setLoadError('');
         load();
         window.addEventListener('focus', load);
         return () => window.removeEventListener('focus', load);
@@ -73,8 +106,8 @@ const TableOrder = () => {
         fetchMenu().then(setMenu).catch(err => setMenuError(err.message));
     }, []);
 
-    // Выполнить запрос и показать результат. Применяется только ответ на
-    // последний запрос, чтобы быстрые клики +/- не откатывали состояние.
+    // Run a request and show its result. Only the response to the latest
+    // request is applied, so fast +/- clicks do not roll the state back.
     const run = async (fn, { lock = true } = {}) => {
         const seq = ++requestSeq.current;
         if (lock) setBusy(true);
@@ -118,22 +151,37 @@ const TableOrder = () => {
     };
 
     const changeQty = (line, qty) => {
+        // Going below the sent quantity — ask whether to send a cancellation
+        if (line.station && qty < line.sentQty) {
+            setCancelAsk({ line, qty });
+            return;
+        }
         setTable(t => ({ ...t, items: t.items.map(l => (l._id === line._id ? { ...l, qty } : l)) }));
         run(() => ordersApi.updateItem(id, line._id, { qty }), { lock: false });
     };
 
     const removeLine = (line) => {
-        const doRemove = () => { setConfirm(null); run(() => ordersApi.removeItem(id, line._id)); };
-        if (line.sentQty > 0) {
-            setConfirm({
-                title: 'Удалить позицию?',
-                text: `«${line.titleRu}» уже отправлено (${line.sentQty} шт). Предупредите ${line.station === 'bar' ? 'бар' : 'кухню'} об отмене.`,
-                confirmLabel: 'Удалить',
-                onConfirm: doRemove,
-            });
-        } else {
-            doRemove();
-        }
+        if (line.station && line.sentQty > 0) setCancelAsk({ line, qty: 0 });
+        else run(() => ordersApi.removeItem(id, line._id));
+    };
+
+    const confirmCancel = async (sendCancel) => {
+        const { line, qty } = cancelAsk;
+        setCancelAsk(null);
+        const ok = await run(() => (qty === 0
+            ? ordersApi.removeItem(id, line._id, sendCancel)
+            : ordersApi.updateItem(id, line._id, { qty, cancelSent: sendCancel })));
+        if (ok && sendCancel) setSnack({ text: `${STATION_LABEL[line.station]}: отмена отправлена на принтер` });
+    };
+
+    const split = async (name, items) => {
+        const result = await ordersApi.split(id, name, items); // the split dialog shows the error
+        setTable(result.table);
+        setSplitOpen(false);
+        setSnack({
+            text: `Перенесено в счёт «${result.target.name}»`,
+            action: { label: 'Открыть', onClick: () => navigate(`/orders/${result.target._id}`) },
+        });
     };
 
     const send = async (station) => {
@@ -190,7 +238,7 @@ const TableOrder = () => {
 
     return (
         <Box sx={{ pb: 4 }}>
-            {/* Шапка */}
+            {/* Header */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
                 <IconButton onClick={() => navigate('/orders')} sx={{ color: '#fff' }} aria-label="К столам">
                     <ArrowBackIcon />
@@ -210,7 +258,7 @@ const TableOrder = () => {
 
             {error && <Alert severity="error" onClose={() => setError('')} sx={{ mb: 2 }}>{error}</Alert>}
 
-            {/* Позиции */}
+            {/* Order lines */}
             <Box sx={{ ...cardSx, mb: 2 }}>
                 {table.items.length === 0 && (
                     <Typography sx={{ color: '#888', p: 2 }}>Заказ пуст</Typography>
@@ -266,9 +314,9 @@ const TableOrder = () => {
                 </Box>
             </Box>
 
-            {/* Действия */}
+            {/* Actions */}
             {!closed && (
-                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 1, mb: 2 }}>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(4, 1fr)' }, gap: 1, mb: 2 }}>
                     <Button variant="contained" startIcon={<AddIcon />} sx={{ ...primaryBtnSx, gridColumn: { sm: '1 / -1' }, py: 1.25 }}
                             onClick={() => setAddOpen(true)} disabled={busy}>
                         Добавить позицию
@@ -281,6 +329,10 @@ const TableOrder = () => {
                             onClick={() => send('bar')} sx={{ color: '#fff', borderColor: '#666' }}>
                         На бар{pendingBar ? ` (${pendingBar})` : ''}
                     </Button>
+                    <Button variant="outlined" startIcon={<CallSplitIcon />} disabled={busy || table.items.length === 0}
+                            onClick={() => setSplitOpen(true)} sx={{ color: '#fff', borderColor: '#666' }}>
+                        Разделить счёт
+                    </Button>
                     <Button variant="contained" color="success" startIcon={<ReceiptIcon />}
                             disabled={busy || table.items.length === 0} onClick={closeTable}>
                         Закрыть стол
@@ -288,7 +340,7 @@ const TableOrder = () => {
                 </Box>
             )}
 
-            {/* Счёт */}
+            {/* Bill */}
             <Box sx={{ ...cardSx, p: 1.5, mb: 2, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1.5 }}>
                 <Typography>Язык счёта</Typography>
                 <Select size="small" value={table.lang} onChange={e => changeLang(e.target.value)} sx={selectSx} disabled={busy}
@@ -315,7 +367,7 @@ const TableOrder = () => {
                 )}
             </Box>
 
-            {/* История заказов на кухню / бар */}
+            {/* Kitchen / bar ticket history */}
             {table.tickets.length > 0 && (
                 <Box sx={{ ...cardSx, p: 1.5 }}>
                     <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>Отправленные заказы</Typography>
@@ -323,11 +375,12 @@ const TableOrder = () => {
                         <Box key={tk._id} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, py: 0.75, borderTop: '1px solid #333' }}>
                             <Box sx={{ flexGrow: 1 }}>
                                 <Typography variant="body2" sx={{ color: '#aaa' }}>
+                                    {tk.cancel && <b style={{ color: '#ff5252' }}>ОТМЕНА · </b>}
                                     {STATION_LABEL[tk.station]} · №{tk.number} · {formatTime(tk.createdAt)}
                                     {tk.done && ' · готово'}
                                 </Typography>
-                                <Typography variant="body2">
-                                    {tk.items.map(i => `${i.title}${i.cap ? ` ${i.cap}` : ''}${i.ice ? ' +лёд' : ''} × ${i.qty}`).join(', ')}
+                                <Typography variant="body2" sx={tk.cancel ? { color: '#ff8a80' } : undefined}>
+                                    {tk.items.map(i => `${i.title}${i.cap ? ` ${i.cap}` : ''}${i.ice ? ' +лёд' : ''} ${tk.cancel ? '−' : '×'} ${i.qty}`).join(', ')}
                                 </Typography>
                             </Box>
                             <IconButton size="small" sx={{ color: '#aaa' }} aria-label="Напечатать ещё раз" title="Напечатать ещё раз"
@@ -359,9 +412,20 @@ const TableOrder = () => {
 
             <ConfirmDialog open={Boolean(confirm)} {...confirm} onClose={() => setConfirm(null)} />
 
+            <CancelDialog ask={cancelAsk} onClose={() => setCancelAsk(null)} onChoose={confirmCancel} />
+
+            {splitOpen && (
+                <SplitDialog open={splitOpen} onClose={() => setSplitOpen(false)} table={table} onSplit={split} />
+            )}
+
             <Snackbar
                 open={Boolean(snack)} autoHideDuration={8000} onClose={() => setSnack(null)}
                 message={snack?.text}
+                action={snack?.action && (
+                    <Button sx={{ color: '#ff8a80' }} onClick={() => { setSnack(null); snack.action.onClick(); }}>
+                        {snack.action.label}
+                    </Button>
+                )}
             />
         </Box>
     );

@@ -8,13 +8,14 @@ const MenuSection = require('../models/MenuSection');
 const PrintJob = require('../models/PrintJob');
 const { renderBill, renderTicket, tableTotal, PAPER } = require('../utils/receipts');
 const { enqueueTicket, enqueueBill, paperForRole } = require('../utils/printQueue');
+const { addPaidTable } = require('./sales');
 
 const BILLS_DIR = path.join(__dirname, '..', 'bills');
 const LANGS = ['RU', 'EN', 'HE'];
 const STATIONS = ['kitchen', 'bar'];
 const STATION_BY_TYPE = { food: 'kitchen', dessert: 'kitchen', bar: 'bar' };
 
-// Естественная сортировка: "1" < "1/1" < "2 терраса" < "10".
+// Natural sort: "1" < "1/1" < "2 терраса" < "10".
 const collator = new Intl.Collator('ru', { numeric: true, sensitivity: 'base' });
 const sortTables = (tables) => tables.sort((a, b) => collator.compare(a.name, b.name));
 
@@ -52,8 +53,8 @@ const writeBillFile = async (table) => {
     return path.basename(billPath(table));
 };
 
-// Загрузить стол, изменить и сохранить. Схема с optimisticConcurrency: если
-// параллельно кто-то сохранил тот же стол, повторяем изменение на свежей копии.
+// Load a table, change it and save it. The schema uses optimisticConcurrency: if
+// someone saved the same table in parallel, the change is retried on a fresh copy.
 const mutate = async (id, fn, { requireOpen = true } = {}) => {
     for (let attempt = 0; attempt < 3; attempt++) {
         const table = await Table.findById(id);
@@ -85,15 +86,15 @@ const ensureUniqueName = async (name, exceptId) => {
     if (clash) throw new HttpError(409, `Стол «${name}» уже есть`);
 };
 
-// ------------------------------------------------------------------ столы
+// ------------------------------------------------------------------ tables
 
-// GET / — все столы, отсортированные по названию
+// GET / — all tables sorted by name
 router.get('/', handle(async (req, res) => {
     const tables = await Table.find().lean();
     res.json(sortTables(tables));
 }));
 
-// GET /tickets?station=kitchen|bar — невыполненные заказы для экрана кухни/бара
+// GET /tickets?station=kitchen|bar — pending tickets for the kitchen/bar screen
 router.get('/tickets', handle(async (req, res) => {
     const { station } = req.query;
     if (!STATIONS.includes(station)) throw new HttpError(400, 'station должен быть kitchen или bar');
@@ -105,7 +106,7 @@ router.get('/tickets', handle(async (req, res) => {
     res.json(tickets);
 }));
 
-// POST / — создать стол { name }
+// POST / — create a table { name }
 router.post('/', handle(async (req, res) => {
     const name = cleanText(req.body.name, 60);
     if (!name) throw new HttpError(400, 'Введите название стола');
@@ -121,7 +122,7 @@ router.get('/:id', handle(async (req, res) => {
     res.json(table);
 }));
 
-// PATCH /:id — переименовать стол / сменить язык счёта { name?, lang? }
+// PATCH /:id — rename a table / change the bill language { name?, lang? }
 router.patch('/:id', handle(async (req, res) => {
     const { name, lang } = req.body;
     const newName = name !== undefined ? cleanText(name, 60) : undefined;
@@ -136,25 +137,34 @@ router.patch('/:id', handle(async (req, res) => {
         if (lang !== undefined) t.lang = lang;
     }, { requireOpen: false });
 
-    // Если счёт уже выставлен — перевыпускаем файл с новым языком/названием.
+    // If the bill is already issued, regenerate the file with the new language/name.
     if (table.status === 'closed') await writeBillFile(table);
     res.json(table);
 }));
 
-// DELETE /:id — удалить стол (счёт оплачен) вместе с файлом счёта
+// DELETE /:id — delete a table together with its bill file. If the bill was issued
+// (table closed), it counts as paid and is added to the current day's sales.
 router.delete('/:id', handle(async (req, res) => {
+    // Deletion is atomic: even with two simultaneous clicks the sum is counted once
     const table = await Table.findByIdAndDelete(req.params.id);
     if (!table) throw new HttpError(404, 'Стол не найден');
+    if (table.status === 'closed') {
+        try {
+            await addPaidTable(table);
+        } catch (err) {
+            console.error(`Не удалось добавить стол «${table.name}» (${table.total} ₪) в продажи:`, err);
+        }
+    }
     await removeBillFile(table);
     await PrintJob.deleteMany({ tableId: table._id });
     res.json({ success: true });
 }));
 
-// ------------------------------------------------------------------ позиции
+// ------------------------------------------------------------------ order lines
 
-// POST /:id/items — добавить позицию.
-// Из меню: { menuItemId, variant: 1|2|3, qty, ice, comment }
-// Не из меню: { custom: true, title, price, qty, comment } — всегда отправляется на бар
+// POST /:id/items — add a line.
+// From the menu: { menuItemId, variant: 1|2|3, qty, ice, comment }
+// Not from the menu: { custom: true, title, price, qty, comment } — always sent to the bar
 router.post('/:id/items', handle(async (req, res) => {
     const body = req.body;
     const qty = parseQty(body.qty ?? 1);
@@ -167,14 +177,14 @@ router.post('/:id/items', handle(async (req, res) => {
         if (!Number.isFinite(price) || price < 0) throw new HttpError(400, 'Введите цену');
         line = {
             menuItemId: null, sectionType: 'custom',
-            station: 'bar', // позиции не из меню всегда идут на бар
+            station: 'bar', // custom items always go to the bar
             titleRu: title, titleEn: title, titleHe: title,
             cap: '', price: Math.round(price * 100) / 100, qty,
             ice: false, comment: cleanText(body.comment),
         };
     } else {
         if (!mongoose.isValidObjectId(body.menuItemId)) throw new HttpError(400, 'Не выбрана позиция меню');
-        // Цену берём из меню на сервере, а не из запроса.
+        // The price is taken from the menu on the server, not from the request.
         const section = await MenuSection.findOne({ 'items._id': body.menuItemId });
         const item = section?.items.id(body.menuItemId);
         if (!item) throw new HttpError(404, 'Позиция меню не найдена');
@@ -194,33 +204,126 @@ router.post('/:id/items', handle(async (req, res) => {
     res.status(201).json(table);
 }));
 
-// PATCH /:id/items/:lineId — изменить { qty?, comment?, ice? }
+// Cancellation ticket for units already sent to the kitchen/bar. Returns its _id.
+const pushCancelTicket = (t, line, qty) => {
+    const number = t.tickets.filter(tk => tk.station === line.station).length + 1;
+    t.tickets.push({
+        station: line.station, number, cancel: true,
+        items: [{
+            title: line.titleRu || line.titleEn || line.titleHe,
+            cap: line.cap, qty, ice: line.ice, comment: line.comment,
+        }],
+    });
+    return t.tickets[t.tickets.length - 1]._id;
+};
+
+const enqueueCancel = async (table, ticketId) => {
+    if (ticketId) await enqueueTicket(table, table.tickets.id(ticketId));
+};
+
+// PATCH /:id/items/:lineId — change { qty?, comment?, ice?, cancelSent? }.
+// If qty drops below the sent quantity, the extra units are treated as removed;
+// with cancelSent: true a cancellation is sent to the kitchen/bar.
 router.patch('/:id/items/:lineId', handle(async (req, res) => {
-    const { qty, comment, ice } = req.body;
-    const { table } = await mutate(req.params.id, (t) => {
+    const { qty, comment, ice, cancelSent } = req.body;
+    const { table, result: cancelId } = await mutate(req.params.id, (t) => {
         const line = t.items.id(req.params.lineId);
         if (!line) throw new HttpError(404, 'Позиция не найдена');
-        if (qty !== undefined) line.qty = parseQty(qty);
         if (comment !== undefined) line.comment = cleanText(comment);
         if (ice !== undefined) line.ice = line.sectionType === 'bar' && Boolean(ice);
+        if (qty === undefined) return null;
+        line.qty = parseQty(qty);
+        if (line.sentQty <= line.qty) return null;
+        const removed = line.sentQty - line.qty;
+        line.sentQty = line.qty;
+        return cancelSent && line.station ? pushCancelTicket(t, line, removed) : null;
     });
+    await enqueueCancel(table, cancelId);
     res.json(table);
 }));
 
-// DELETE /:id/items/:lineId
+// DELETE /:id/items/:lineId?cancel=1 — remove a line; with cancel=1 a cancellation
+// of the already sent units is sent to the kitchen/bar.
 router.delete('/:id/items/:lineId', handle(async (req, res) => {
-    const { table } = await mutate(req.params.id, (t) => {
+    const withCancel = req.query.cancel === '1';
+    const { table, result: cancelId } = await mutate(req.params.id, (t) => {
         const line = t.items.id(req.params.lineId);
         if (!line) throw new HttpError(404, 'Позиция не найдена');
+        const ticketId = withCancel && line.station && line.sentQty > 0
+            ? pushCancelTicket(t, line, line.sentQty)
+            : null;
         line.deleteOne();
+        return ticketId;
     });
+    await enqueueCancel(table, cancelId);
     res.json(table);
 }));
 
-// ------------------------------------------------------------------ кухня / бар
+// POST /:id/split { name, items: [{ lineId, qty }] } — move part of the lines
+// to a new bill (a new table). Nothing is sent to the kitchen or bar: already
+// sent units keep their "sent" status.
+router.post('/:id/split', handle(async (req, res) => {
+    const wanted = new Map();
+    for (const m of Array.isArray(req.body.items) ? req.body.items : []) {
+        const qty = Number(m?.qty);
+        if (!Number.isInteger(qty) || qty < 0) throw new HttpError(400, 'Неверное количество для переноса');
+        if (qty > 0) wanted.set(String(m.lineId), qty);
+    }
+    if (!wanted.size) throw new HttpError(400, 'Выберите, что перенести');
 
-// POST /:id/send { station } — отправить ещё не отправленные позиции станции.
-// Каждая отправка создаёт новый тикет, поэтому дозаказ — это новый заказ на кухню/бар.
+    const name = cleanText(req.body.name, 60);
+    if (!name) throw new HttpError(400, 'Введите название нового счёта');
+    await ensureUniqueName(name);
+
+    const source = await Table.findById(req.params.id);
+    if (!source) throw new HttpError(404, 'Стол не найден');
+    const target = await Table.create({ name, lang: source.lang });
+
+    // 1. Take the lines off the source table
+    let moved;
+    try {
+        ({ result: moved } = await mutate(req.params.id, (t) => {
+            const out = [];
+            for (const [lineId, qty] of wanted) {
+                const line = t.items.id(lineId);
+                if (!line) throw new HttpError(404, 'Позиция не найдена — обновите страницу');
+                if (qty > line.qty) throw new HttpError(400, `«${line.titleRu}»: можно перенести не больше ${line.qty}`);
+                // Move sent units first — people usually split what was already served
+                const sentMoved = Math.min(qty, line.sentQty);
+                const { _id, createdAt, ...data } = line.toObject();
+                out.push({ ...data, qty, sentQty: sentMoved });
+                if (qty === line.qty) {
+                    line.deleteOne();
+                } else {
+                    line.qty -= qty;
+                    line.sentQty -= sentMoved;
+                }
+            }
+            return out;
+        }));
+    } catch (err) {
+        await Table.deleteOne({ _id: target._id });
+        throw err;
+    }
+
+    // 2. Put them into the new bill; on failure put them back
+    try {
+        await mutate(target._id, (t) => { t.items.push(...moved); });
+    } catch (err) {
+        await mutate(req.params.id, (t) => { t.items.push(...moved); }, { requireOpen: false })
+            .catch(e => console.error('Не удалось вернуть позиции после ошибки разделения:', e));
+        await Table.deleteOne({ _id: target._id });
+        throw err;
+    }
+
+    const table = await Table.findById(req.params.id);
+    res.status(201).json({ table, target: { _id: target._id, name: target.name } });
+}));
+
+// ------------------------------------------------------------------ kitchen / bar
+
+// POST /:id/send { station } — send the station's not yet sent lines.
+// Every send creates a new ticket, so a follow-up order is a new kitchen/bar ticket.
 router.post('/:id/send', handle(async (req, res) => {
     const { station } = req.body;
     if (!STATIONS.includes(station)) throw new HttpError(400, 'station должен быть kitchen или bar');
@@ -240,12 +343,12 @@ router.post('/:id/send', handle(async (req, res) => {
         return t.tickets[t.tickets.length - 1]._id;
     }, { requireOpen: false });
 
-    // Задание для принтера кухни/бара — его заберёт программа-посредник
+    // Job for the kitchen/bar printer — print-agent will pick it up
     await enqueueTicket(table, table.tickets.id(ticketId));
     res.status(201).json({ table, ticketId });
 }));
 
-// GET /:id/tickets/:ticketId?paper=58|80&print=1 — тикет для печати
+// GET /:id/tickets/:ticketId?paper=58|80&print=1 — printable ticket
 router.get('/:id/tickets/:ticketId', handle(async (req, res) => {
     const table = await Table.findById(req.params.id);
     const ticket = table?.tickets.id(req.params.ticketId);
@@ -253,7 +356,7 @@ router.get('/:id/tickets/:ticketId', handle(async (req, res) => {
     res.type('html').send(renderTicket(table, ticket, paperOf(req.query.paper, paperForRole(ticket.station))));
 }));
 
-// POST /:id/tickets/:ticketId/print — напечатать заказ ещё раз на принтере станции
+// POST /:id/tickets/:ticketId/print — print the ticket again on the station printer
 router.post('/:id/tickets/:ticketId/print', handle(async (req, res) => {
     const table = await Table.findById(req.params.id);
     const ticket = table?.tickets.id(req.params.ticketId);
@@ -262,7 +365,7 @@ router.post('/:id/tickets/:ticketId/print', handle(async (req, res) => {
     res.status(201).json({ ok: true });
 }));
 
-// PATCH /:id/tickets/:ticketId { done } — отметить заказ выполненным
+// PATCH /:id/tickets/:ticketId { done } — mark a ticket as done
 router.patch('/:id/tickets/:ticketId', handle(async (req, res) => {
     const { table } = await mutate(req.params.id, (t) => {
         const ticket = t.tickets.id(req.params.ticketId);
@@ -272,10 +375,10 @@ router.patch('/:id/tickets/:ticketId', handle(async (req, res) => {
     res.json(table);
 }));
 
-// ------------------------------------------------------------------ счёт
+// ------------------------------------------------------------------ bill
 
-// POST /:id/close { lang?, paper? } — закрыть стол: посчитать сумму и сформировать файл счёта.
-// Повторный вызов перевыпускает счёт (например, на другом языке).
+// POST /:id/close { lang?, paper? } — close the table: compute the total and create the bill file.
+// Calling it again reissues the bill (e.g. in another language).
 router.post('/:id/close', handle(async (req, res) => {
     const { lang, paper } = req.body;
     if (lang !== undefined && !LANGS.includes(lang)) throw new HttpError(400, 'Неизвестный язык');
@@ -299,7 +402,7 @@ router.post('/:id/close', handle(async (req, res) => {
     res.json(table);
 }));
 
-// POST /:id/bill/print — напечатать счёт ещё раз на принтере счетов
+// POST /:id/bill/print — print the bill again on the bills printer
 router.post('/:id/bill/print', handle(async (req, res) => {
     const table = await Table.findById(req.params.id);
     if (!table) throw new HttpError(404, 'Стол не найден');
@@ -308,7 +411,7 @@ router.post('/:id/bill/print', handle(async (req, res) => {
     res.status(201).json({ ok: true });
 }));
 
-// POST /:id/reopen — снова открыть стол для правок; файл счёта удаляется
+// POST /:id/reopen — reopen the table for edits; the bill file is deleted
 router.post('/:id/reopen', handle(async (req, res) => {
     const { table } = await mutate(req.params.id, (t) => {
         t.status = 'open';
@@ -323,8 +426,8 @@ router.post('/:id/reopen', handle(async (req, res) => {
     res.json(table);
 }));
 
-// GET /:id/bill?print=1 — файл счёта. Если файла нет на диске (например, после
-// перезапуска сервера на хостинге без постоянного диска) — создаётся заново.
+// GET /:id/bill?print=1 — the bill file. If it is missing on disk (e.g. after a
+// restart on hosting without a persistent disk), it is generated again.
 router.get('/:id/bill', handle(async (req, res) => {
     const table = await Table.findById(req.params.id);
     if (!table) throw new HttpError(404, 'Стол не найден');

@@ -62,7 +62,7 @@ const AdminMenu = () => {
 
     useEffect(() => { loadSections(); }, [loadSections]);
 
-    // В форме позиция нумеруется с 1, в API уходит индекс массива (с 0)
+    // The form numbers positions from 1; the API receives a 0-based array index
     const currentSection = sections.find(s => s.sectionId === currentSectionId);
     const itemsCount = currentSection?.items?.length || 0;
     const maxPosition = editItem ? itemsCount : itemsCount + 1;

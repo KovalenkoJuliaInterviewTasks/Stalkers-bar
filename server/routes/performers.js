@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Performer = require('../models/Performer');
 
-// GET / — все исполнители
+// GET / — all performers
 router.get('/', async (req, res) => {
     try {
         const performers = await Performer.find().sort('title');
@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// POST / — создать исполнителя
+// POST / — create a performer
 router.post('/', async (req, res) => {
     try {
         const performer = new Performer(req.body);
@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT /:id — обновить исполнителя
+// PUT /:id — update a performer
 router.put('/:id', async (req, res) => {
     try {
         const performer = await Performer.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
@@ -34,7 +34,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE /:id — удалить исполнителя
+// DELETE /:id — delete a performer
 router.delete('/:id', async (req, res) => {
     try {
         const performer = await Performer.findByIdAndDelete(req.params.id);

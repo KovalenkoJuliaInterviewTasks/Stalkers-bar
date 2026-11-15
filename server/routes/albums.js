@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// POST / — создать альбом
+// POST / — create an album
 router.post('/', async (req, res) => {
     try {
         const album = new Album(req.body);
@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT /:id — обновить альбом (добавить фото)
+// PUT /:id — update an album (add photos)
 router.put('/:id', async (req, res) => {
     try {
         const album = await Album.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -33,7 +33,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE /:id — удалить альбом
+// DELETE /:id — delete an album
 router.delete('/:id', async (req, res) => {
     try {
         const album = await Album.findByIdAndDelete(req.params.id);

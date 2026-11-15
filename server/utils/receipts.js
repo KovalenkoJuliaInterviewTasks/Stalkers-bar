@@ -1,18 +1,19 @@
-// HTML-шаблоны для термопринтера чеков (58 мм или 80 мм лента).
-// Печать идёт из браузера: страница открывается с ?print=1 и сама вызывает
-// window.print(). В диалоге печати нужно выбрать термопринтер и поля «Нет».
+// HTML templates for thermal receipt printers (58 mm or 80 mm paper).
+// Normally print-agent renders them to an image and prints it. As a fallback a
+// page opened with ?print=1 calls window.print() itself; in the browser print
+// dialog pick the thermal printer and margins "None".
 
 const fs = require('fs');
 const path = require('path');
 
-// Эмблема для шапки счёта: уменьшенная ч/б копия public/images/logo.png,
-// встраивается в файл счёта, чтобы он открывался и печатался без внешних ссылок.
+// Logo for the bill header: a small grayscale copy of public/images/logo.png,
+// embedded into the bill file so it opens and prints without external links.
 const LOGO_SRC = (() => {
     try {
         const file = fs.readFileSync(path.join(__dirname, '..', 'assets', 'logo-receipt.png'));
         return `data:image/png;base64,${file.toString('base64')}`;
     } catch {
-        return null; // нет файла — счёт печатается без эмблемы
+        return null; // no file — the bill is printed without the logo
     }
 })();
 
@@ -88,6 +89,8 @@ const page = ({ title, lang, paper, body }) => {
   td.num { text-align: end; white-space: nowrap; padding-inline-start: 2mm; }
   .total td { font-weight: bold; font-size: 1.25em; padding-top: 1.5mm; }
   .note { font-size: .9em; font-style: italic; }
+  .cancel { border: 1.2mm solid #000; padding: 1.5mm 2mm; }
+  .cancel-title { font-size: 2.2em; font-weight: 900; letter-spacing: .12em; text-align: center; line-height: 1.1; }
   @media screen { body { margin: 8px auto; box-shadow: 0 0 0 1px #ccc; padding: 3mm; } }
 </style>
 <script>
@@ -103,7 +106,7 @@ ${body}
 `;
 };
 
-// Одинаковые позиции (то же название, вариант и цена) на счёте сливаются в одну строку.
+// Identical lines (same title, variant and price) are merged into one bill row.
 const groupForBill = (items, lang) => {
     const groups = new Map();
     for (const line of items) {
@@ -144,27 +147,31 @@ const renderBill = (table, lang = 'RU', paper = '58') => {
     return page({ title: `${t.bill} — ${table.name}`, lang, paper, body });
 };
 
-// Тикеты на кухню/бар всегда на русском — это внутренний документ персонала.
+// Kitchen/bar tickets are always in Russian — an internal document for staff.
+// A cancellation is printed in a thick frame with a large "ОТМЕНА" and minus quantities.
 const renderTicket = (table, ticket, paper = '58') => {
+    const cancel = Boolean(ticket.cancel);
     const rows = ticket.items.map(i => `
 <tr>
   <td><b>${escapeHtml(i.title)}</b>${i.cap ? ` <span class="nw">${escapeHtml(i.cap)}</span>` : ''}
       ${i.ice ? '<br>+ ЛЁД' : ''}
       ${i.comment ? `<br><span class="note">${escapeHtml(i.comment)}</span>` : ''}</td>
-  <td class="num big">× ${i.qty}</td>
+  <td class="num big">${cancel ? '− ' : '× '}${i.qty}</td>
 </tr>`).join('');
 
-    const body = `
+    const inner = `${cancel ? '<div class="cancel-title">ОТМЕНА</div>' : ''}
 <div class="center big">${STATION_TITLE[ticket.station]}</div>
-<div class="center">Заказ №${ticket.number}</div>
+<div class="center">${cancel ? 'Отмена' : 'Заказ'} №${ticket.number}</div>
 <hr>
 <div class="big">Стол: ${escapeHtml(table.name)}</div>
 <div class="muted">${escapeHtml(formatDate(ticket.createdAt || new Date(), 'RU'))}</div>
 <hr>
 <table>${rows}</table>
-<hr>`;
+<hr>${cancel ? '\n<div class="cancel-title">ОТМЕНА</div>' : ''}`;
 
-    return page({ title: `${STATION_TITLE[ticket.station]} — ${table.name}`, lang: 'RU', paper, body });
+    const body = cancel ? `<div class="cancel">${inner}</div>` : inner;
+    const title = `${cancel ? 'ОТМЕНА — ' : ''}${STATION_TITLE[ticket.station]} — ${table.name}`;
+    return page({ title, lang: 'RU', paper, body });
 };
 
 module.exports = { renderBill, renderTicket, tableTotal, PAPER };

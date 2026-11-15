@@ -7,8 +7,8 @@ const { renderBill, renderTicket } = require('../utils/receipts');
 const { agentState, touchAgent, onlinePrinters, AGENT_ONLINE_MS } = require('../utils/printQueue');
 
 const ROLES = ['kitchen', 'bar', 'bills'];
-const JOB_TTL_MS = 30 * 60 * 1000;   // старше 30 минут не печатаем — заказ уже неактуален
-const STALE_CLAIM_MS = 2 * 60 * 1000; // агент взял задание и пропал — отдать снова
+const JOB_TTL_MS = 30 * 60 * 1000;   // older than 30 minutes is not printed — the order is no longer relevant
+const STALE_CLAIM_MS = 2 * 60 * 1000; // the agent claimed a job and vanished — hand it out again
 const MAX_ATTEMPTS = 5;
 
 const handle = (fn) => async (req, res) => {
@@ -20,9 +20,9 @@ const handle = (fn) => async (req, res) => {
     }
 };
 
-// ------------------------------------------------------------------ для программы-посредника
+// ------------------------------------------------------------------ print-agent API
 
-// Доступ только с токеном PRINT_AGENT_TOKEN из .env (заголовок X-Print-Token).
+// Access only with the PRINT_AGENT_TOKEN from .env (X-Print-Token header).
 const requireAgent = (req, res, next) => {
     const expected = process.env.PRINT_AGENT_TOKEN;
     if (!expected) return res.status(503).json({ error: 'PRINT_AGENT_TOKEN не задан на сервере' });
@@ -41,7 +41,7 @@ const parsePrinter = (body) => {
     return { name: String(p.name || 'printer').slice(0, 60), roles, paper: p.paper === '80' ? '80' : '58' };
 };
 
-// Подготовить HTML для задания. null — задание больше не нужно (стол удалён, счёт снят).
+// Build the HTML for a job. null — the job is no longer needed (table deleted, bill withdrawn).
 const renderJob = async (job, paper) => {
     const table = await Table.findById(job.tableId);
     if (!table) return null;
@@ -53,8 +53,8 @@ const renderJob = async (job, paper) => {
     return ticket ? renderTicket(table, ticket, paper) : null;
 };
 
-// POST /agent/claim { printer: { name, roles, paper } } — взять следующее задание для принтера.
-// Ответ: { job, html } или 204, если печатать нечего.
+// POST /agent/claim { printer: { name, roles, paper } } — take the next job for a printer.
+// Response: { job, html }, or 204 when there is nothing to print.
 router.post('/agent/claim', requireAgent, handle(async (req, res) => {
     const printer = parsePrinter(req.body);
     touchAgent(printer);
@@ -71,7 +71,7 @@ router.post('/agent/claim', requireAgent, handle(async (req, res) => {
     );
 
     for (let i = 0; i < 5; i++) {
-        // Атомарно: одно задание достанется только одному агенту/принтеру.
+        // Atomic: a job goes to exactly one agent/printer.
         const job = await PrintJob.findOneAndUpdate(
             { role: { $in: printer.roles }, status: 'pending', nextTryAt: { $lte: now } },
             { $set: { status: 'printing', claimedAt: now, printerName: printer.name }, $inc: { attempts: 1 } },
@@ -98,7 +98,7 @@ router.post('/agent/jobs/:id/done', requireAgent, handle(async (req, res) => {
     res.json({ ok: true });
 }));
 
-// POST /agent/jobs/:id/fail { error } — повторяем с паузой, после MAX_ATTEMPTS — ошибка
+// POST /agent/jobs/:id/fail { error } — retry after a pause; after MAX_ATTEMPTS mark as error
 router.post('/agent/jobs/:id/fail', requireAgent, handle(async (req, res) => {
     touchAgent();
     const job = await PrintJob.findOne({ _id: req.params.id, status: 'printing' });
@@ -115,9 +115,9 @@ router.post('/agent/jobs/:id/fail', requireAgent, handle(async (req, res) => {
     res.json({ ok: true });
 }));
 
-// ------------------------------------------------------------------ для страницы заказов
+// ------------------------------------------------------------------ orders page API
 
-// GET /status — на связи ли принтеры и какие задания застряли
+// GET /status — whether printers are online and which jobs are stuck
 router.get('/status', handle(async (req, res) => {
     const since = new Date(Date.now() - 3 * 60 * 60 * 1000);
     const problems = await PrintJob.find({
@@ -140,7 +140,7 @@ router.get('/status', handle(async (req, res) => {
     });
 }));
 
-// POST /jobs/:id/retry — поставить задание в очередь заново
+// POST /jobs/:id/retry — put a job back in the queue
 router.post('/jobs/:id/retry', handle(async (req, res) => {
     const now = new Date();
     const job = await PrintJob.findByIdAndUpdate(req.params.id, {
@@ -150,7 +150,7 @@ router.post('/jobs/:id/retry', handle(async (req, res) => {
     res.json({ ok: true });
 }));
 
-// DELETE /jobs/:id — убрать задание из списка проблем
+// DELETE /jobs/:id — remove a job from the problems list
 router.delete('/jobs/:id', handle(async (req, res) => {
     await PrintJob.updateOne({ _id: req.params.id }, { $set: { status: 'cancelled' } });
     res.json({ ok: true });

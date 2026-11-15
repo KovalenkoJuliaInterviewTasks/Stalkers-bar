@@ -20,13 +20,16 @@ export const ordersApi = {
     remove: (id) => request(`/${id}`, { method: 'DELETE' }),
     addItem: (id, item) => request(`/${id}/items`, { method: 'POST', body: item }),
     updateItem: (id, lineId, patch) => request(`/${id}/items/${lineId}`, { method: 'PATCH', body: patch }),
-    removeItem: (id, lineId) => request(`/${id}/items/${lineId}`, { method: 'DELETE' }),
+    // cancel: true — send a cancellation of already sent units to the kitchen/bar
+    removeItem: (id, lineId, cancel = false) =>
+        request(`/${id}/items/${lineId}${cancel ? '?cancel=1' : ''}`, { method: 'DELETE' }),
+    split: (id, name, items) => request(`/${id}/split`, { method: 'POST', body: { name, items } }),
     send: (id, station) => request(`/${id}/send`, { method: 'POST', body: { station } }),
     tickets: (station) => request(`/tickets?station=${station}`),
     setTicketDone: (id, ticketId, done = true) =>
         request(`/${id}/tickets/${ticketId}`, { method: 'PATCH', body: { done } }),
     close: (id, lang) => request(`/${id}/close`, { method: 'POST', body: { lang } }),
-    // Напечатать ещё раз — задание уходит на принтер через программу-посредник
+    // Print again — the job goes to the printer via print-agent
     printTicket: (id, ticketId) => request(`/${id}/tickets/${ticketId}/print`, { method: 'POST' }),
     printBill: (id) => request(`/${id}/bill/print`, { method: 'POST' }),
     reopen: (id) => request(`/${id}/reopen`, { method: 'POST' }),
@@ -59,15 +62,15 @@ export const fetchMenu = async () => {
     return Object.fromEntries(types.map((type, i) => [type, results[i]]));
 };
 
-// Открыть страницу печати. Вызывать прямо из обработчика клика, иначе
-// браузер может заблокировать новое окно.
+// Open a print page. Call directly from a click handler, otherwise
+// the browser may block the new window.
 export const openPrint = (url) => window.open(url, '_blank');
 
 export const lineTotal = (line) => line.price * line.qty;
 export const tableTotal = (table) => (table.items || []).reduce((s, l) => s + lineTotal(l), 0);
 export const money = (n) => `${Math.round(n * 100) / 100} ₪`;
 
-// Сколько штук ещё не отправлено на станцию
+// How many units have not been sent to the station yet
 export const pendingCount = (table, station) => (table.items || [])
     .filter(l => l.station === station)
     .reduce((s, l) => s + Math.max(0, l.qty - l.sentQty), 0);

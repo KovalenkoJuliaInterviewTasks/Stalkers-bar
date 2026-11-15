@@ -10,7 +10,7 @@ import QtyStepper from './QtyStepper';
 import { money } from './api';
 import { ACCENT, checkboxSx, dialogPaperSx, fieldSx, primaryBtnSx } from './styles';
 
-// Разделы меню в порядке показа
+// Menu groups in display order
 const GROUPS = [
     { type: 'bar', label: 'Жидкое топливо' },
     { type: 'food', label: 'Твердое топливо' },
@@ -21,7 +21,7 @@ const normalize = (s) => String(s || '').toLowerCase().replace(/ё/g, 'е');
 
 const hasPrice = (v) => v !== null && v !== undefined && v !== '';
 
-// Варианты позиции меню: cost1/cap1 … cost3/cap3
+// Menu item variants: cost1/cap1 … cost3/cap3
 const variantsOf = (item) => [1, 2, 3]
     .filter(n => hasPrice(item[`cost${n}`]))
     .map(n => ({ n, cap: item[`cap${n}`] || '', cost: item[`cost${n}`] }));
@@ -138,8 +138,8 @@ const AddItemDialog = ({ open, onClose, menu, menuError, onAdd }) => {
         if (open) { setSelectedId(null); setNotice(null); setSearch(''); setCustomOpen(false); }
     }, [open]);
 
-    // Все разделы меню одним списком. Каждое слово запроса ищется в любом
-    // месте названия, порядок слов не важен.
+    // All menu groups in one list. Each search word is matched anywhere
+    // in the title; word order does not matter.
     const groups = useMemo(() => {
         if (!menu) return [];
         const words = normalize(search).split(/\s+/).filter(Boolean);
@@ -168,7 +168,7 @@ const AddItemDialog = ({ open, onClose, menu, menuError, onAdd }) => {
             setNotice(null);
             setSelectedId(null);
             setSearch('');
-            if (payload.custom) setCustomOpen(false); // после позиции не из меню — обратно к списку меню
+            if (payload.custom) setCustomOpen(false); // after a custom item, go back to the menu list
             return true;
         } catch (err) {
             setNotice({ type: 'error', text: err.message });

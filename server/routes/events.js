@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// POST / — создать событие
+// POST / — create an event
 router.post('/', async (req, res) => {
     try {
         const event = new Event(req.body);
@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT /:id — обновить событие
+// PUT /:id — update an event
 router.put('/:id', async (req, res) => {
     try {
         const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
@@ -38,7 +38,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE /:id — удалить событие
+// DELETE /:id — delete an event
 router.delete('/:id', async (req, res) => {
     try {
         const event = await Event.findByIdAndDelete(req.params.id);

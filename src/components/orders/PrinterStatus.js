@@ -14,7 +14,7 @@ const STATUS_LABEL = {
 
 const formatTime = (date) => new Date(date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
-// Индикатор в шапке: на связи ли программа печати и есть ли застрявшие задания.
+// Header indicator: whether print-agent is online and whether jobs are stuck.
 const PrinterStatus = () => {
     const [status, setStatus] = useState(null);
     const [open, setOpen] = useState(false);
@@ -29,7 +29,7 @@ const PrinterStatus = () => {
         return () => clearInterval(timer);
     }, [load]);
 
-    if (!status || !status.configured) return null; // печать через посредника не настроена
+    if (!status || !status.configured) return null; // printing via the agent is not configured
 
     const problems = status.problems.length;
     const ok = status.online && problems === 0;
